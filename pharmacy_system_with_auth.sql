@@ -85,11 +85,13 @@ CREATE TABLE IF NOT EXISTS activity_log (
 );
 
 -- 6. Insert Default Users
--- Password: admin123 (you should change this in production)
-INSERT INTO users (username, password, full_name, email, role) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin@pharmacy.com', 'admin'),
-('pharmacist1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'John Pharmacist', 'john@pharmacy.com', 'pharmacist'),
-('cashier1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Jane Cashier', 'jane@pharmacy.com', 'cashier');
+-- Run api/setup_users.php after importing this SQL file to create default users
+-- This ensures passwords are properly hashed
+
+-- Default users will be:
+-- Username: admin, Password: admin123, Role: admin
+-- Username: pharmacist1, Password: admin123, Role: pharmacist
+-- Username: cashier1, Password: admin123, Role: cashier
 
 -- Note: All default passwords are 'admin123'
 -- To generate a new password hash in PHP: password_hash('your_password', PASSWORD_DEFAULT)

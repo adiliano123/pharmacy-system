@@ -6,7 +6,10 @@ export const useSales = (view) => {
 
   const fetchSales = () => {
     salesAPI.getAll()
-      .then(res => setSalesData(res.data))
+      .then(res => {
+        const data = res.data.data || res.data || [];
+        setSalesData(data);
+      })
       .catch(err => console.error("Error fetching sales:", err));
   };
 

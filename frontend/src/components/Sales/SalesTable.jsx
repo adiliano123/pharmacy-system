@@ -13,6 +13,7 @@ const SalesTable = ({ salesData, generateReceipt }) => {
             <th style={thStyle}>Medicine</th>
             <th style={thStyle}>Qty Sold</th>
             <th style={thStyle}>Revenue</th>
+            <th style={thStyle}>Sold By</th>
             <th style={thStyle}>Action</th>
           </tr>
         </thead>
@@ -29,16 +30,39 @@ const SalesTable = ({ salesData, generateReceipt }) => {
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = i % 2 === 0 ? '#fff' : '#f7fafc'}
             >
               <td style={tdStyle}>
-                <span style={{ color: '#4a5568' }}>{new Date(sale.sale_date).toLocaleString()}</span>
+                <span style={{ color: '#4a5568', fontSize: '13px' }}>
+                  {new Date(sale.sale_date).toLocaleString()}
+                </span>
               </td>
               <td style={tdStyle}>
                 <strong style={{ color: '#2d3748' }}>{sale.name}</strong>
+                {sale.customer_name && (
+                  <div style={{ fontSize: '12px', color: '#718096', marginTop: '2px' }}>
+                    Customer: {sale.customer_name}
+                  </div>
+                )}
               </td>
               <td style={tdStyle}>
                 <span style={{ color: '#4a5568', fontWeight: '600' }}>{sale.quantity_sold}</span>
               </td>
               <td style={{...tdStyle, color: '#48bb78', fontWeight: 'bold', fontSize: '16px'}}>
                 ${parseFloat(sale.total_revenue).toFixed(2)}
+              </td>
+              <td style={tdStyle}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '18px' }}>
+                    {sale.employee_role === 'admin' ? '👑' : 
+                     sale.employee_role === 'pharmacist' ? '💊' : '💰'}
+                  </span>
+                  <div>
+                    <div style={{ fontWeight: '600', fontSize: '13px', color: '#2d3748' }}>
+                      {sale.employee_name || 'Unknown'}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#718096' }}>
+                      @{sale.employee_username || 'N/A'}
+                    </div>
+                  </div>
+                </div>
               </td>
               <td style={tdStyle}>
                 <button 
