@@ -4,6 +4,7 @@ import LoginForm from "./components/Auth/LoginForm";
 import Header from "./components/Layout/Header";
 import TabNavigation from "./components/Layout/TabNavigation";
 import UserProfile from "./components/Layout/UserProfile";
+import HomePage from "./components/Dashboard/HomePage";
 import DashboardCards from "./components/Dashboard/DashboardCards";
 import AddStockForm from "./components/Inventory/AddStockForm";
 import SearchPanel from "./components/Inventory/SearchPanel";
@@ -16,9 +17,10 @@ import "./App.css";
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
-  const [view, setView] = useState('inventory');
+  const [view, setView] = useState('home');
 
   const {
+    data: inventoryData,
     filteredData,
     searchTerm,
     setSearchTerm,
@@ -31,6 +33,14 @@ function App() {
   } = useInventory(view);
 
   const { salesData, totalRevenue } = useSales(view);
+
+  // Calculate total sales and items
+  const totalSales = salesData.length;
+  const totalItems = salesData.reduce((acc, sale) => acc + parseInt(sale.quantity_sold || 0), 0);
+  
+  // Calculate total stock value and quantity
+  const totalStockValue = inventoryData.reduce((acc, item) => acc + (parseFloat(item.price || 0) * parseInt(item.quantity || 0)), 0);
+  const totalStockQuantity = inventoryData.reduce((acc, item) => acc + parseInt(item.quantity || 0), 0);
 
   if (loading) {
     return (
@@ -71,14 +81,35 @@ function App() {
         </div>
         
         <TabNavigation view={view} setView={setView} />
-        <DashboardCards 
-          totalRevenue={totalRevenue} 
-          lowStockCount={lowStockCount} 
-          outOfStockCount={outOfStockCount} 
-        />
 
-        {view === 'inventory' ? (
+        {view === 'home' && (
+          <HomePage 
+            totalRevenue={totalRevenue}
+            lowStockCount={lowStockCount}
+            outOfStockCount={outOfStockCount}
+            totalSales={totalSales}
+            totalItems={totalItems}
+            totalStockValue={totalStockValue}
+            totalStockQuantity={totalStockQuantity}
+            inventoryCount={inventoryData.length}
+          />
+        )}
+
+        {view === 'dashboard' && (
+          <DashboardCards 
+            totalRevenue={totalRevenue} 
+            lowStockCount={lowStockCount} 
+            outOfStockCount={outOfStockCount} 
+          />
+        )}
+
+        {view === 'inventory' && (
           <>
+            <DashboardCards 
+              totalRevenue={totalRevenue} 
+              lowStockCount={lowStockCount} 
+              outOfStockCount={outOfStockCount} 
+            />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px', marginBottom: '35px' }}>
               <AddStockForm 
                 formData={formData} 
@@ -96,11 +127,20 @@ function App() {
               handleDispense={handleDispense} 
             />
           </>
-        ) : (
-          <SalesTable 
-            salesData={salesData} 
-            generateReceipt={generateReceipt} 
-          />
+        )}
+
+        {view === 'sales' && (
+          <>
+            <DashboardCards 
+              totalRevenue={totalRevenue} 
+              lowStockCount={lowStockCount} 
+              outOfStockCount={outOfStockCount} 
+            />
+            <SalesTable 
+              salesData={salesData} 
+              generateReceipt={generateReceipt} 
+            />
+          </>
         )}
       </div>
     </div>

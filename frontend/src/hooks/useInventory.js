@@ -28,7 +28,7 @@ export const useInventory = (view) => {
     e.preventDefault();
     inventoryAPI.addMedicine(formData)
       .then(() => {
-        alert("Stock Added successfully!");
+        alert("✓ Stock added successfully!");
         fetchInventory();
         setFormData({ 
           name: '', 
@@ -40,7 +40,11 @@ export const useInventory = (view) => {
           price: '' 
         });
       })
-      .catch(() => alert("Error adding stock."));
+      .catch((error) => {
+        const errorMsg = error.response?.data?.message || "Error adding stock. Please check all fields.";
+        alert("❌ " + errorMsg);
+        console.error("Add stock error:", error);
+      });
   };
 
   const handleDispense = (inventoryId, qty) => {

@@ -1,6 +1,9 @@
 const TabNavigation = ({ view, setView }) => {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '40px' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '40px', flexWrap: 'wrap' }}>
+      <button onClick={() => setView('home')} style={view === 'home' ? activeTabStyle : tabStyle}>
+        <span style={{ fontSize: '18px', marginRight: '8px' }}>🏠</span> Home
+      </button>
       <button onClick={() => setView('inventory')} style={view === 'inventory' ? activeTabStyle : tabStyle}>
         <span style={{ fontSize: '18px', marginRight: '8px' }}>📦</span> Inventory & Stock
       </button>

@@ -43,6 +43,16 @@ html {
   }
 }
 
+/* Pulse animation for status indicators */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 /* Hover effects */
 .card-hover {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -72,4 +82,24 @@ table tbody tr {
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
+}
+
+/* Stat card hover effect */
+@keyframes statCardHover {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Action card hover */
+div[style*="actionCard"]:hover {
+  border-color: #667eea !important;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2) !important;
 }

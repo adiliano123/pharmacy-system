@@ -7,7 +7,7 @@ const AddStockForm = ({ formData, setFormData, handleSubmit }) => {
       <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
         <input 
           type="text" 
-          placeholder="Medicine Name" 
+          placeholder="Medicine Name *" 
           style={inputStyle} 
           value={formData.name} 
           onChange={e => setFormData({...formData, name: e.target.value})} 
@@ -15,7 +15,21 @@ const AddStockForm = ({ formData, setFormData, handleSubmit }) => {
         />
         <input 
           type="text" 
-          placeholder="Batch Number" 
+          placeholder="Generic Name" 
+          style={inputStyle} 
+          value={formData.generic_name} 
+          onChange={e => setFormData({...formData, generic_name: e.target.value})} 
+        />
+        <input 
+          type="text" 
+          placeholder="Category (e.g., Antibiotic)" 
+          style={inputStyle} 
+          value={formData.category} 
+          onChange={e => setFormData({...formData, category: e.target.value})} 
+        />
+        <input 
+          type="text" 
+          placeholder="Batch Number *" 
           style={inputStyle} 
           value={formData.batch_number} 
           onChange={e => setFormData({...formData, batch_number: e.target.value})} 
@@ -23,7 +37,7 @@ const AddStockForm = ({ formData, setFormData, handleSubmit }) => {
         />
         <input 
           type="number" 
-          placeholder="Quantity" 
+          placeholder="Quantity *" 
           style={inputStyle} 
           value={formData.quantity} 
           onChange={e => setFormData({...formData, quantity: e.target.value})} 
@@ -32,7 +46,7 @@ const AddStockForm = ({ formData, setFormData, handleSubmit }) => {
         <input 
           type="number" 
           step="0.01" 
-          placeholder="Price Per Unit ($)" 
+          placeholder="Price Per Unit ($) *" 
           style={inputStyle} 
           value={formData.price} 
           onChange={e => setFormData({...formData, price: e.target.value})} 
@@ -40,6 +54,7 @@ const AddStockForm = ({ formData, setFormData, handleSubmit }) => {
         />
         <input 
           type="date" 
+          placeholder="Expiry Date *"
           style={{...inputStyle, gridColumn: 'span 2'}} 
           value={formData.expiry_date} 
           onChange={e => setFormData({...formData, expiry_date: e.target.value})} 
