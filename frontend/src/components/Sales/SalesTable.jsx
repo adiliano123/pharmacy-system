@@ -18,7 +18,32 @@ const SalesTable = ({ salesData, generateReceipt }) => {
           </tr>
         </thead>
         <tbody>
-          {salesData.map((sale, i) => (
+          {salesData.length === 0 ? (
+            <tr>
+              <td colSpan="6" style={{ ...tdStyle, textAlign: 'center', padding: '60px 20px' }}>
+                <div style={{ fontSize: '64px', marginBottom: '20px', opacity: 0.5 }}>📭</div>
+                <div style={{ fontSize: '20px', fontWeight: '600', color: '#2d3748', marginBottom: '10px' }}>
+                  No Sales Yet
+                </div>
+                <div style={{ fontSize: '14px', color: '#718096', marginBottom: '20px' }}>
+                  Dispense medicine from the Inventory tab to see sales here
+                </div>
+                <div style={{ 
+                  display: 'inline-block',
+                  padding: '12px 24px',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: '#fff',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+                }}>
+                  💡 Tip: Go to Inventory → Dispense Medicine → Come back here to see the 🖨️ Receipt button
+                </div>
+              </td>
+            </tr>
+          ) : (
+            salesData.map((sale, i) => (
             <tr 
               key={i} 
               style={{ 
@@ -46,7 +71,7 @@ const SalesTable = ({ salesData, generateReceipt }) => {
                 <span style={{ color: '#4a5568', fontWeight: '600' }}>{sale.quantity_sold}</span>
               </td>
               <td style={{...tdStyle, color: '#48bb78', fontWeight: 'bold', fontSize: '16px'}}>
-                ${parseFloat(sale.total_revenue).toFixed(2)}
+                TSh {parseFloat(sale.total_revenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
               <td style={tdStyle}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -73,7 +98,8 @@ const SalesTable = ({ salesData, generateReceipt }) => {
                 </button>
               </td>
             </tr>
-          ))}
+          ))
+          )}
         </tbody>
       </table>
     </div>

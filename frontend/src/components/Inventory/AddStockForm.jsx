@@ -46,7 +46,7 @@ const AddStockForm = ({ formData, setFormData, handleSubmit }) => {
         <input 
           type="number" 
           step="0.01" 
-          placeholder="Price Per Unit ($) *" 
+          placeholder="Price Per Unit (TSh) *" 
           style={inputStyle} 
           value={formData.price} 
           onChange={e => setFormData({...formData, price: e.target.value})} 
@@ -69,33 +69,37 @@ const AddStockForm = ({ formData, setFormData, handleSubmit }) => {
 };
 
 const inputStyle = { 
-  padding: '12px 16px', 
-  borderRadius: '8px', 
+  padding: '14px 18px', 
+  borderRadius: '12px', 
   border: '2px solid #e2e8f0', 
   fontSize: '14px',
-  transition: 'all 0.2s',
-  outline: 'none'
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  outline: 'none',
+  fontFamily: 'inherit'
 };
 
 const buttonStyle = { 
-  padding: '12px 24px', 
+  padding: '14px 28px', 
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
   color: '#fff', 
   border: 'none', 
-  borderRadius: '8px', 
+  borderRadius: '12px', 
   cursor: 'pointer', 
   fontWeight: '600',
-  fontSize: '14px',
-  transition: 'all 0.3s',
-  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
+  fontSize: '15px',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  boxShadow: '0 6px 20px rgba(102, 126, 234, 0.4)',
+  position: 'relative',
+  overflow: 'hidden'
 };
 
 const panelStyle = { 
   background: '#fff', 
-  padding: '25px', 
-  borderRadius: '16px', 
-  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-  border: '1px solid #e2e8f0'
+  padding: '30px', 
+  borderRadius: '20px', 
+  boxShadow: '0 6px 30px rgba(0,0,0,0.1)',
+  border: '1px solid #e2e8f0',
+  animation: 'fadeInUp 0.5s ease'
 };
 
 export default AddStockForm;

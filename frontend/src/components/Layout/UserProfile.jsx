@@ -1,14 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 const UserProfile = () => {
   const { user, logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update time every second for real-time greeting
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // Update every second
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       logout();
     }
+  };
+
+  const getTimeBasedGreeting = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    
+    // Debug: Log current time
+    console.log('UserProfile - Current time:', now.toLocaleString());
+    console.log('UserProfile - Current hour:', hour);
+    
+    let greeting = '';
+    if (hour >= 5 && hour < 12) {
+      greeting = 'Good Morning';
+    } else if (hour >= 12 && hour < 17) {
+      greeting = 'Good Afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      greeting = 'Good Evening';
+    } else {
+      greeting = 'Good Evening';
+    }
+    
+    console.log('UserProfile - Selected greeting:', greeting, 'for hour:', hour);
+    return greeting;
   };
 
   const getRoleColor = (role) => {
@@ -67,6 +100,9 @@ const UserProfile = () => {
             onClick={() => setShowMenu(false)}
           />
           <div style={menuStyle}>
+            <div style={greetingStyle}>
+              {getTimeBasedGreeting()}, {user.full_name}! 👋
+            </div>
             <div style={menuItemStyle}>
               <strong>Username:</strong> {user.username}
             </div>
@@ -75,6 +111,13 @@ const UserProfile = () => {
                 <strong>Email:</strong> {user.email}
               </div>
             )}
+            <div style={menuItemStyle}>
+              <strong>Current Time:</strong> {currentTime.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+              })}
+            </div>
             <div style={{ borderTop: '1px solid #e2e8f0', margin: '10px 0' }} />
             <button 
               onClick={handleLogout}
@@ -87,6 +130,15 @@ const UserProfile = () => {
       )}
     </div>
   );
+};
+
+const greetingStyle = {
+  padding: '10px 0',
+  fontSize: '14px',
+  fontWeight: '600',
+  color: '#667eea',
+  borderBottom: '1px solid #e2e8f0',
+  marginBottom: '10px'
 };
 
 const containerStyle = {

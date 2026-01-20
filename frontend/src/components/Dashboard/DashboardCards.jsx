@@ -4,7 +4,7 @@ const DashboardCards = ({ totalRevenue, lowStockCount, outOfStockCount }) => {
       <div style={{ ...cardStyle, background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' }}>
         <div style={{ fontSize: '32px', marginBottom: '10px' }}>💵</div>
         <h4 style={labelHeaderStyle}>Total Revenue</h4>
-        <h2 style={{ margin: '10px 0 0 0', color: '#fff', fontSize: '2rem' }}>${totalRevenue.toFixed(2)}</h2>
+        <h2 style={{ margin: '10px 0 0 0', color: '#fff', fontSize: '2rem' }}>TSh {totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
       </div>
       <div style={{ ...cardStyle, background: lowStockCount > 0 ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' }}>
         <div style={{ fontSize: '32px', marginBottom: '10px' }}>⚠️</div>

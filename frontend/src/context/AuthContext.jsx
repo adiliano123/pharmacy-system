@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sessionToken, setSessionToken] = useState(localStorage.getItem('session_token'));
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
 
   const logout = useCallback(async () => {
     try {
@@ -55,8 +56,15 @@ export const AuthProvider = ({ children }) => {
         const { session_token, user } = response.data;
         setSessionToken(session_token);
         setUser(user);
+        setJustLoggedIn(true);
         localStorage.setItem('session_token', session_token);
         localStorage.setItem('user', JSON.stringify(user));
+        
+        // Clear the just logged in flag after 5 seconds
+        setTimeout(() => {
+          setJustLoggedIn(false);
+        }, 5000);
+        
         return { success: true };
       }
       return { success: false, message: response.data.message };
@@ -74,7 +82,8 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    justLoggedIn
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

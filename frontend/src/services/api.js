@@ -45,6 +45,10 @@ export const authAPI = {
 export const inventoryAPI = {
   getAll: () => apiClient.get('/get_inventory.php'),
   addMedicine: (data) => apiClient.post('/add_medicine.php', data),
+  updateMedicine: (inventoryId, data) => apiClient.put('/update_medicine.php', {
+    inventory_id: inventoryId,
+    ...data
+  }),
   dispense: (inventoryId, qty, customerName = null, notes = null) => 
     apiClient.post('/dispense.php', {
       inventory_id: inventoryId,

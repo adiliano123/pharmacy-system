@@ -48,13 +48,41 @@ export const useInventory = (view) => {
   };
 
   const handleDispense = (inventoryId, qty) => {
-    if (!qty || qty <= 0) return alert("Enter a valid quantity.");
-    inventoryAPI.dispense(inventoryId, qty)
-      .then(() => {
-        alert("Dispensed successfully!");
+    if (!qty || qty <= 0) {
+      alert("❌ Please enter a valid quantity.");
+      return;
+    }
+    
+    const quantity = parseInt(qty);
+    if (isNaN(quantity)) {
+      alert("❌ Quantity must be a number.");
+      return;
+    }
+    
+    inventoryAPI.dispense(inventoryId, quantity)
+      .then((response) => {
+        const data = response.data;
+        alert(`✓ Dispensed successfully!\n\nQuantity: ${data.quantity_dispensed}\nRevenue: TSh ${data.total_revenue.toLocaleString()}\nRemaining Stock: ${data.remaining_stock}`);
         fetchInventory();
       })
-      .catch(err => alert(err.response?.data?.message || "Error dispensing"));
+      .catch(err => {
+        const errorMsg = err.response?.data?.message || "Error dispensing medicine. Please try again.";
+        alert("❌ " + errorMsg);
+        console.error("Dispense error:", err);
+      });
+  };
+
+  const handleUpdate = (inventoryId, updatedData) => {
+    inventoryAPI.updateMedicine(inventoryId, updatedData)
+      .then(() => {
+        alert("✓ Stock updated successfully!");
+        fetchInventory();
+      })
+      .catch((error) => {
+        const errorMsg = error.response?.data?.message || "Error updating stock.";
+        alert("❌ " + errorMsg);
+        console.error("Update stock error:", error);
+      });
   };
 
   const filteredData = data.filter(item => 
@@ -74,6 +102,7 @@ export const useInventory = (view) => {
     setFormData,
     handleSubmit,
     handleDispense,
+    handleUpdate,
     lowStockCount,
     outOfStockCount
   };

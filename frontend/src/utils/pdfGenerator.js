@@ -27,8 +27,8 @@ export const generateReceipt = (sale) => {
         sale.name, 
         sale.batch_number, 
         sale.quantity_sold, 
-        `${(sale.total_revenue / sale.quantity_sold).toFixed(2)}`, 
-        `${parseFloat(sale.total_revenue).toFixed(2)}`
+        `TSh ${(sale.total_revenue / sale.quantity_sold).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
+        `TSh ${parseFloat(sale.total_revenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       ]
     ],
     theme: 'striped',
@@ -39,7 +39,7 @@ export const generateReceipt = (sale) => {
   const finalY = doc.lastAutoTable.finalY;
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text(`Total Amount: ${parseFloat(sale.total_revenue).toFixed(2)}`, 140, finalY + 20);
+  doc.text(`Total Amount: TSh ${parseFloat(sale.total_revenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 140, finalY + 20);
   doc.setFontSize(10);
   doc.setFont("helvetica", "italic");
   doc.text("Thank you for your visit. Get well soon!", 105, finalY + 40, { align: "center" });

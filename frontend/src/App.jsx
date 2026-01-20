@@ -28,6 +28,7 @@ function App() {
     setFormData,
     handleSubmit,
     handleDispense,
+    handleUpdate,
     lowStockCount,
     outOfStockCount
   } = useInventory(view);
@@ -67,13 +68,40 @@ function App() {
       maxWidth: '1400px', 
       margin: '0 auto', 
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-      minHeight: '100vh' 
+      minHeight: '100vh',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
+      {/* Animated background elements */}
+      <div style={{
+        position: 'absolute',
+        top: '-50%',
+        right: '-10%',
+        width: '600px',
+        height: '600px',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+        borderRadius: '50%',
+        animation: 'float 6s ease-in-out infinite'
+      }}></div>
+      <div style={{
+        position: 'absolute',
+        bottom: '-30%',
+        left: '-5%',
+        width: '400px',
+        height: '400px',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
+        borderRadius: '50%',
+        animation: 'float 8s ease-in-out infinite'
+      }}></div>
+      
       <div style={{ 
         background: 'rgba(255, 255, 255, 0.98)', 
         borderRadius: '24px', 
         padding: '40px', 
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)' 
+        boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 100px rgba(102, 126, 234, 0.2)',
+        position: 'relative',
+        zIndex: 1,
+        animation: 'fadeInUp 0.6s ease'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '35px' }}>
           <Header />
@@ -124,7 +152,8 @@ function App() {
             </div>
             <InventoryTable 
               filteredData={filteredData} 
-              handleDispense={handleDispense} 
+              handleDispense={handleDispense}
+              handleUpdate={handleUpdate}
             />
           </>
         )}
