@@ -1,15 +1,27 @@
-const TabNavigation = ({ view, setView }) => {
+const TabNavigation = ({ view, setView, userRole }) => {
+  const tabs = [
+    { id: 'home', label: 'Home', icon: '🏠', roles: ['admin', 'pharmacist', 'cashier'] },
+    { id: 'admin', label: 'Administration', icon: '👑', roles: ['admin'] },
+    { id: 'pharmacist', label: 'Clinical Duties', icon: '💊', roles: ['pharmacist'] },
+    { id: 'cashier', label: 'Cashier Operations', icon: '💰', roles: ['cashier'] },
+    { id: 'inventory', label: 'Inventory & Stock', icon: '📦', roles: ['admin', 'pharmacist', 'cashier'] },
+    { id: 'sales', label: 'Sales & Revenue', icon: '💰', roles: ['admin', 'pharmacist', 'cashier'] }
+  ];
+
+  const visibleTabs = tabs.filter(tab => tab.roles.includes(userRole));
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '40px', flexWrap: 'wrap' }}>
-      <button onClick={() => setView('home')} style={view === 'home' ? activeTabStyle : tabStyle}>
-        <span style={{ fontSize: '18px', marginRight: '8px' }}>🏠</span> Home
-      </button>
-      <button onClick={() => setView('inventory')} style={view === 'inventory' ? activeTabStyle : tabStyle}>
-        <span style={{ fontSize: '18px', marginRight: '8px' }}>📦</span> Inventory & Stock
-      </button>
-      <button onClick={() => setView('sales')} style={view === 'sales' ? activeTabStyle : tabStyle}>
-        <span style={{ fontSize: '18px', marginRight: '8px' }}>💰</span> Sales & Revenue
-      </button>
+      {visibleTabs.map(tab => (
+        <button 
+          key={tab.id}
+          onClick={() => setView(tab.id)} 
+          style={view === tab.id ? activeTabStyle : tabStyle}
+        >
+          <span style={{ fontSize: '18px', marginRight: '8px' }}>{tab.icon}</span> 
+          {tab.label}
+        </button>
+      ))}
     </div>
   );
 };

@@ -4,49 +4,66 @@ header("Access-Control-Allow-Origin: *");
 
 require_once 'config/database.php';
 
+$response = [
+    'success' => false,
+    'users' => [],
+    'database_status' => 'unknown',
+    'table_exists' => false
+];
+
 try {
     // Check if users table exists
     $result = $conn->query("SHOW TABLES LIKE 'users'");
-    if ($result->num_rows === 0) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Users table does not exist. Please import pharmacy_system_with_auth.sql first.',
-            'solution' => 'Import the SQL file via phpMyAdmin or run: mysql -u root < pharmacy_system_with_auth.sql'
-        ], JSON_PRETTY_PRINT);
-        exit();
-    }
+    $response['table_exists'] = $result->num_rows > 0;
     
-    // Get all users
-    $result = $conn->query("SELECT user_id, username, full_name, email, role, is_active, created_at, last_login FROM users");
-    $users = [];
-    
-    while ($row = $result->fetch_assoc()) {
-        $users[] = $row;
-    }
-    
-    if (count($users) === 0) {
-        echo json_encode([
-            'status' => 'warning',
-            'message' => 'No users found in database',
-            'solution' => 'Run setup_users.php to create default users',
-            'url' => 'http://localhost/pharmacy-system/api/setup_users.php',
-            'users_count' => 0
-        ], JSON_PRETTY_PRINT);
+    if ($response['table_exists']) {
+        // Get all users
+        $result = $conn->query("SELECT user_id, username, full_name, email, role, is_active, created_at, last_login FROM users ORDER BY user_id");
+        
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+        
+        $response['users'] = $users;
+        $response['user_count'] = count($users);
+        $response['success'] = true;
+        $response['database_status'] = 'connected';
+        $response['message'] = 'Users table found with ' . count($users) . ' users';
+        
+        // Check specifically for cashier1
+        $cashier_exists = false;
+        foreach ($users as $user) {
+            if ($user['username'] === 'cashier1') {
+                $cashier_exists = true;
+                $response['cashier1_status'] = [
+                    'exists' => true,
+                    'is_active' => (bool)$user['is_active'],
+                    'full_name' => $user['full_name'],
+                    'role' => $user['role']
+                ];
+                break;
+            }
+        }
+        
+        if (!$cashier_exists) {
+            $response['cashier1_status'] = [
+                'exists' => false,
+                'message' => 'Cashier1 user not found. Run setup_users.php to create default users.'
+            ];
+        }
+        
     } else {
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Users found in database',
-            'users_count' => count($users),
-            'users' => $users,
-            'note' => 'If you cannot login, run setup_users.php to reset passwords to admin123'
-        ], JSON_PRETTY_PRINT);
+        $response['message'] = 'Users table does not exist. Import pharmacy_system_with_auth.sql first.';
+        $response['database_status'] = 'connected_but_no_table';
     }
     
 } catch (Exception $e) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => $e->getMessage(),
-        'solution' => 'Check database connection and ensure pharmacy_system database exists'
-    ], JSON_PRETTY_PRINT);
+    $response['success'] = false;
+    $response['error'] = $e->getMessage();
+    $response['database_status'] = 'connection_failed';
+    $response['message'] = 'Database connection failed: ' . $e->getMessage();
 }
+
+echo json_encode($response, JSON_PRETTY_PRINT);
 ?>

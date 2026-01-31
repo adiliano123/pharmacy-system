@@ -10,13 +10,16 @@ import AddStockForm from "./components/Inventory/AddStockForm";
 import SearchPanel from "./components/Inventory/SearchPanel";
 import InventoryTable from "./components/Inventory/InventoryTable";
 import SalesTable from "./components/Sales/SalesTable";
+import PharmacistDashboard from "./components/Pharmacist/PharmacistDashboard";
+import AdminDashboard from "./components/Admin/AdminDashboard";
+import CashierDashboard from "./components/Cashier/CashierDashboard";
 import { useInventory } from "./hooks/useInventory";
 import { useSales } from "./hooks/useSales";
 import { generateReceipt } from "./utils/pdfGenerator";
 import "./App.css";
 
 function App() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const [view, setView] = useState('home');
 
   const {
@@ -108,7 +111,19 @@ function App() {
           <UserProfile />
         </div>
         
-        <TabNavigation view={view} setView={setView} />
+        <TabNavigation view={view} setView={setView} userRole={user?.role} />
+
+        {view === 'pharmacist' && user?.role === 'pharmacist' && (
+          <PharmacistDashboard />
+        )}
+
+        {view === 'admin' && user?.role === 'admin' && (
+          <AdminDashboard />
+        )}
+
+        {view === 'cashier' && user?.role === 'cashier' && (
+          <CashierDashboard />
+        )}
 
         {view === 'home' && (
           <HomePage 

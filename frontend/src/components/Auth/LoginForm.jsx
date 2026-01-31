@@ -116,6 +116,9 @@ const LoginForm = () => {
           <p style={{ margin: '5px 0', fontSize: '12px' }}>
             Username: <code>pharmacist1</code> | Password: <code>admin123</code>
           </p>
+          <p style={{ margin: '5px 0', fontSize: '12px' }}>
+            Username: <code>cashier1</code> | Password: <code>admin123</code>
+          </p>
         </div>
       </div>
     </div>
