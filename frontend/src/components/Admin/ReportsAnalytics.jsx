@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const ReportsAnalytics = () => {
   const [reportData, setReportData] = useState({
@@ -21,16 +21,23 @@ const ReportsAnalytics = () => {
     }
   });
   const [selectedReport, setSelectedReport] = useState('sales');
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0]
+  const [dateRange, setDateRange] = useState(() => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    };
   });
 
   useEffect(() => {
+     
     fetchReportData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedReport, dateRange]);
 
-  const fetchReportData = async () => {
+  const fetchReportData = useCallback(async () => {
     try {
       // Mock data for demonstration
       const mockSalesData = {
@@ -86,7 +93,11 @@ const ReportsAnalytics = () => {
     } catch (error) {
       console.error('Error fetching report data:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchReportData();
+  }, [fetchReportData]);
 
   const exportReport = (format) => {
     alert(`Exporting ${selectedReport} report as ${format.toUpperCase()}...`);

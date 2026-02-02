@@ -1,0 +1,96 @@
+[02-Feb-2026 17:39:33 Europe/Berlin] === SALE PROCESSING REQUEST ===
+[02-Feb-2026 17:39:33 Europe/Berlin] Method: POST
+[02-Feb-2026 17:39:33 Europe/Berlin] Headers: {"Host":"localhost","Connection":"keep-alive","Content-Length":"155","sec-ch-ua-platform":"\"Windows\"","Authorization":"Bearer c816321edf660906d30a4010e8dfb5008815b0eb3b53500095b5468fb017a157","User-Agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/144.0.0.0 Safari\/537.36","sec-ch-ua":"\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\"","Content-Type":"application\/json","sec-ch-ua-mobile":"?0","Accept":"*\/*","Origin":"http:\/\/localhost:5173","Sec-Fetch-Site":"same-site","Sec-Fetch-Mode":"cors","Sec-Fetch-Dest":"empty","Referer":"http:\/\/localhost:5173\/","Accept-Encoding":"gzip, deflate, br, zstd","Accept-Language":"en-US,en;q=0.9"}
+[02-Feb-2026 17:39:33 Europe/Berlin] Raw input: {"items":[{"inventory_id":3,"quantity":10}],"customer":{"name":"","phone":"","email":""},"payment_method":"cash","subtotal":2000,"discount":0,"total":2000}
+[02-Feb-2026 17:39:33 Europe/Berlin] Session token received: Yes
+[02-Feb-2026 17:39:33 Europe/Berlin] User authenticated: ID = 6
+[02-Feb-2026 17:39:33 Europe/Berlin] Items count: 1
+[02-Feb-2026 17:39:33 Europe/Berlin] Payment method: cash
+[02-Feb-2026 17:39:33 Europe/Berlin] Total: 2000
+[02-Feb-2026 17:39:33 Europe/Berlin] Transaction started
+[02-Feb-2026 17:39:33 Europe/Berlin] Processing item 1: {"inventory_id":3,"quantity":10}
+[02-Feb-2026 17:39:33 Europe/Berlin] Found medicine: Brufen (Stock: 80, Price: 200.00)
+[02-Feb-2026 17:39:33 Europe/Berlin] Updated inventory: Brufen (Sold: 10)
+[02-Feb-2026 17:39:33 Europe/Berlin] Recorded sale: Brufen (Sale ID: 9)
+[02-Feb-2026 17:39:33 Europe/Berlin] Activity logged
+[02-Feb-2026 17:39:33 Europe/Berlin] Transaction committed successfully
+[02-Feb-2026 17:40:09 Europe/Berlin] === SALE PROCESSING REQUEST ===
+[02-Feb-2026 17:40:09 Europe/Berlin] Method: POST
+[02-Feb-2026 17:40:09 Europe/Berlin] Headers: {"Host":"localhost","Connection":"keep-alive","Content-Length":"155","sec-ch-ua-platform":"\"Windows\"","Authorization":"Bearer c816321edf660906d30a4010e8dfb5008815b0eb3b53500095b5468fb017a157","User-Agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/144.0.0.0 Safari\/537.36","sec-ch-ua":"\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\"","Content-Type":"application\/json","sec-ch-ua-mobile":"?0","Accept":"*\/*","Origin":"http:\/\/localhost:5173","Sec-Fetch-Site":"same-site","Sec-Fetch-Mode":"cors","Sec-Fetch-Dest":"empty","Referer":"http:\/\/localhost:5173\/","Accept-Encoding":"gzip, deflate, br, zstd","Accept-Language":"en-US,en;q=0.9"}
+[02-Feb-2026 17:40:09 Europe/Berlin] Raw input: {"items":[{"inventory_id":3,"quantity":10}],"customer":{"name":"","phone":"","email":""},"payment_method":"cash","subtotal":2000,"discount":0,"total":2000}
+[02-Feb-2026 17:40:09 Europe/Berlin] Session token received: Yes
+[02-Feb-2026 17:40:09 Europe/Berlin] User authenticated: ID = 6
+[02-Feb-2026 17:40:09 Europe/Berlin] Items count: 1
+[02-Feb-2026 17:40:09 Europe/Berlin] Payment method: cash
+[02-Feb-2026 17:40:09 Europe/Berlin] Total: 2000
+[02-Feb-2026 17:40:09 Europe/Berlin] Transaction started
+[02-Feb-2026 17:40:09 Europe/Berlin] Processing item 1: {"inventory_id":3,"quantity":10}
+[02-Feb-2026 17:40:09 Europe/Berlin] Found medicine: Brufen (Stock: 70, Price: 200.00)
+[02-Feb-2026 17:40:09 Europe/Berlin] Updated inventory: Brufen (Sold: 10)
+[02-Feb-2026 17:40:09 Europe/Berlin] Recorded sale: Brufen (Sale ID: 10)
+[02-Feb-2026 17:40:09 Europe/Berlin] Activity logged
+[02-Feb-2026 17:40:09 Europe/Berlin] Transaction committed successfully
+[02-Feb-2026 17:40:49 Europe/Berlin] === SALE PROCESSING REQUEST ===
+[02-Feb-2026 17:40:49 Europe/Berlin] Method: POST
+[02-Feb-2026 17:40:49 Europe/Berlin] Headers: {"Host":"localhost","Connection":"keep-alive","Content-Length":"155","sec-ch-ua-platform":"\"Windows\"","Authorization":"Bearer c816321edf660906d30a4010e8dfb5008815b0eb3b53500095b5468fb017a157","User-Agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/144.0.0.0 Safari\/537.36","sec-ch-ua":"\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\"","Content-Type":"application\/json","sec-ch-ua-mobile":"?0","Accept":"*\/*","Origin":"http:\/\/localhost:5173","Sec-Fetch-Site":"same-site","Sec-Fetch-Mode":"cors","Sec-Fetch-Dest":"empty","Referer":"http:\/\/localhost:5173\/","Accept-Encoding":"gzip, deflate, br, zstd","Accept-Language":"en-US,en;q=0.9"}
+[02-Feb-2026 17:40:49 Europe/Berlin] Raw input: {"items":[{"inventory_id":3,"quantity":10}],"customer":{"name":"","phone":"","email":""},"payment_method":"cash","subtotal":2000,"discount":0,"total":2000}
+[02-Feb-2026 17:40:49 Europe/Berlin] Session token received: Yes
+[02-Feb-2026 17:40:49 Europe/Berlin] User authenticated: ID = 6
+[02-Feb-2026 17:40:49 Europe/Berlin] Items count: 1
+[02-Feb-2026 17:40:49 Europe/Berlin] Payment method: cash
+[02-Feb-2026 17:40:49 Europe/Berlin] Total: 2000
+[02-Feb-2026 17:40:49 Europe/Berlin] Transaction started
+[02-Feb-2026 17:40:49 Europe/Berlin] Processing item 1: {"inventory_id":3,"quantity":10}
+[02-Feb-2026 17:40:49 Europe/Berlin] Found medicine: Brufen (Stock: 60, Price: 200.00)
+[02-Feb-2026 17:40:49 Europe/Berlin] Updated inventory: Brufen (Sold: 10)
+[02-Feb-2026 17:40:49 Europe/Berlin] Recorded sale: Brufen (Sale ID: 11)
+[02-Feb-2026 17:40:49 Europe/Berlin] Activity logged
+[02-Feb-2026 17:40:49 Europe/Berlin] Transaction committed successfully
+[02-Feb-2026 17:43:25 Europe/Berlin] === SALE PROCESSING REQUEST ===
+[02-Feb-2026 17:43:25 Europe/Berlin] Method: POST
+[02-Feb-2026 17:43:25 Europe/Berlin] Headers: {"Host":"localhost","Connection":"keep-alive","Content-Length":"155","sec-ch-ua-platform":"\"Windows\"","Authorization":"Bearer c816321edf660906d30a4010e8dfb5008815b0eb3b53500095b5468fb017a157","User-Agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/144.0.0.0 Safari\/537.36","sec-ch-ua":"\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\"","Content-Type":"application\/json","sec-ch-ua-mobile":"?0","Accept":"*\/*","Origin":"http:\/\/localhost:5173","Sec-Fetch-Site":"same-site","Sec-Fetch-Mode":"cors","Sec-Fetch-Dest":"empty","Referer":"http:\/\/localhost:5173\/","Accept-Encoding":"gzip, deflate, br, zstd","Accept-Language":"en-US,en;q=0.9"}
+[02-Feb-2026 17:43:25 Europe/Berlin] Raw input: {"items":[{"inventory_id":3,"quantity":10}],"customer":{"name":"","phone":"","email":""},"payment_method":"cash","subtotal":2000,"discount":0,"total":2000}
+[02-Feb-2026 17:43:25 Europe/Berlin] Session token received: Yes
+[02-Feb-2026 17:43:25 Europe/Berlin] User authenticated: ID = 6
+[02-Feb-2026 17:43:25 Europe/Berlin] Items count: 1
+[02-Feb-2026 17:43:25 Europe/Berlin] Payment method: cash
+[02-Feb-2026 17:43:25 Europe/Berlin] Total: 2000
+[02-Feb-2026 17:43:25 Europe/Berlin] Transaction started
+[02-Feb-2026 17:43:25 Europe/Berlin] Processing item 1: {"inventory_id":3,"quantity":10}
+[02-Feb-2026 17:43:25 Europe/Berlin] Found medicine: Brufen (Stock: 50, Price: 200.00)
+[02-Feb-2026 17:43:25 Europe/Berlin] Updated inventory: Brufen (Sold: 10)
+[02-Feb-2026 17:43:25 Europe/Berlin] Recorded sale: Brufen (Sale ID: 12)
+[02-Feb-2026 17:43:25 Europe/Berlin] Activity logged
+[02-Feb-2026 17:43:25 Europe/Berlin] Transaction committed successfully
+[02-Feb-2026 17:45:21 Europe/Berlin] === SALE PROCESSING REQUEST ===
+[02-Feb-2026 17:45:21 Europe/Berlin] Method: POST
+[02-Feb-2026 17:45:21 Europe/Berlin] Headers: {"Host":"localhost","Connection":"keep-alive","Content-Length":"155","sec-ch-ua-platform":"\"Windows\"","Authorization":"Bearer 4e8d8edecddfdcc7659ecad4e902f562667e84ec59469a99977a76be4eca5646","User-Agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/144.0.0.0 Safari\/537.36","sec-ch-ua":"\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\"","Content-Type":"application\/json","sec-ch-ua-mobile":"?0","Accept":"*\/*","Origin":"http:\/\/localhost:5173","Sec-Fetch-Site":"same-site","Sec-Fetch-Mode":"cors","Sec-Fetch-Dest":"empty","Referer":"http:\/\/localhost:5173\/","Accept-Encoding":"gzip, deflate, br, zstd","Accept-Language":"en-US,en;q=0.9"}
+[02-Feb-2026 17:45:21 Europe/Berlin] Raw input: {"items":[{"inventory_id":1,"quantity":20}],"customer":{"name":"","phone":"","email":""},"payment_method":"cash","subtotal":2000,"discount":0,"total":2000}
+[02-Feb-2026 17:45:21 Europe/Berlin] Session token received: Yes
+[02-Feb-2026 17:45:21 Europe/Berlin] User authenticated: ID = 6
+[02-Feb-2026 17:45:21 Europe/Berlin] Items count: 1
+[02-Feb-2026 17:45:21 Europe/Berlin] Payment method: cash
+[02-Feb-2026 17:45:21 Europe/Berlin] Total: 2000
+[02-Feb-2026 17:45:21 Europe/Berlin] Transaction started
+[02-Feb-2026 17:45:21 Europe/Berlin] Processing item 1: {"inventory_id":1,"quantity":20}
+[02-Feb-2026 17:45:21 Europe/Berlin] Found medicine: Panadol (Stock: 100, Price: 100.00)
+[02-Feb-2026 17:45:21 Europe/Berlin] Updated inventory: Panadol (Sold: 20)
+[02-Feb-2026 17:45:21 Europe/Berlin] Recorded sale: Panadol (Sale ID: 13)
+[02-Feb-2026 17:45:21 Europe/Berlin] Activity logged
+[02-Feb-2026 17:45:21 Europe/Berlin] Transaction committed successfully
+[02-Feb-2026 17:45:38 Europe/Berlin] === SALE PROCESSING REQUEST ===
+[02-Feb-2026 17:45:38 Europe/Berlin] Method: POST
+[02-Feb-2026 17:45:38 Europe/Berlin] Headers: {"Host":"localhost","Connection":"keep-alive","Content-Length":"155","sec-ch-ua-platform":"\"Windows\"","Authorization":"Bearer 4e8d8edecddfdcc7659ecad4e902f562667e84ec59469a99977a76be4eca5646","User-Agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/144.0.0.0 Safari\/537.36","sec-ch-ua":"\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\"","Content-Type":"application\/json","sec-ch-ua-mobile":"?0","Accept":"*\/*","Origin":"http:\/\/localhost:5173","Sec-Fetch-Site":"same-site","Sec-Fetch-Mode":"cors","Sec-Fetch-Dest":"empty","Referer":"http:\/\/localhost:5173\/","Accept-Encoding":"gzip, deflate, br, zstd","Accept-Language":"en-US,en;q=0.9"}
+[02-Feb-2026 17:45:38 Europe/Berlin] Raw input: {"items":[{"inventory_id":1,"quantity":20}],"customer":{"name":"","phone":"","email":""},"payment_method":"cash","subtotal":2000,"discount":0,"total":2000}
+[02-Feb-2026 17:45:38 Europe/Berlin] Session token received: Yes
+[02-Feb-2026 17:45:38 Europe/Berlin] User authenticated: ID = 6
+[02-Feb-2026 17:45:38 Europe/Berlin] Items count: 1
+[02-Feb-2026 17:45:38 Europe/Berlin] Payment method: cash
+[02-Feb-2026 17:45:38 Europe/Berlin] Total: 2000
+[02-Feb-2026 17:45:38 Europe/Berlin] Transaction started
+[02-Feb-2026 17:45:38 Europe/Berlin] Processing item 1: {"inventory_id":1,"quantity":20}
+[02-Feb-2026 17:45:38 Europe/Berlin] Found medicine: Panadol (Stock: 80, Price: 100.00)
+[02-Feb-2026 17:45:38 Europe/Berlin] Updated inventory: Panadol (Sold: 20)
+[02-Feb-2026 17:45:38 Europe/Berlin] Recorded sale: Panadol (Sale ID: 14)
+[02-Feb-2026 17:45:38 Europe/Berlin] Activity logged
+[02-Feb-2026 17:45:38 Europe/Berlin] Transaction committed successfully

@@ -18,68 +18,67 @@ const PaymentProcessing = () => {
 
   const fetchPayments = async () => {
     try {
-      // Mock pending payments
-      const mockPendingPayments = [
-        {
-          id: 1,
-          transactionId: 'TXN005',
-          customerName: 'Robert Wilson',
-          amount: 2500,
-          items: ['Amoxicillin 250mg', 'Paracetamol 500mg'],
-          createdAt: '2024-01-31 15:30:00',
-          status: 'pending',
-          paymentMethod: 'insurance'
-        },
-        {
-          id: 2,
-          transactionId: 'TXN006',
-          customerName: 'Sarah Brown',
-          amount: 1800,
-          items: ['Vitamin C 1000mg', 'Ibuprofen 400mg'],
-          createdAt: '2024-01-31 14:45:00',
-          status: 'pending',
-          paymentMethod: 'mobile'
-        }
-      ];
+      // Get session token from localStorage
+      const sessionToken = localStorage.getItem('sessionToken');
+      
+      if (!sessionToken) {
+        throw new Error('Please log in to view payments');
+      }
 
-      // Mock payment history
-      const mockPaymentHistory = [
-        {
-          id: 3,
-          transactionId: 'TXN004',
-          customerName: 'Mary Johnson',
-          amount: 1615,
-          paymentMethod: 'cash',
-          processedAt: '2024-01-31 11:20:15',
-          status: 'completed',
-          reference: 'CASH001'
-        },
-        {
-          id: 4,
-          transactionId: 'TXN003',
-          customerName: 'Walk-in Customer',
-          amount: 1200,
-          paymentMethod: 'mobile',
-          processedAt: '2024-01-31 12:45:30',
-          status: 'completed',
-          reference: 'M-PESA123456'
-        },
-        {
-          id: 5,
-          transactionId: 'TXN002',
-          customerName: 'Jane Smith',
-          amount: 2660,
-          paymentMethod: 'card',
-          processedAt: '2024-01-31 13:15:10',
-          status: 'completed',
-          reference: 'CARD789012'
+      // Fetch recent sales as payment data
+      const response = await fetch('http://localhost/pharmacy-system/api/modules/get_sales.php', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
         }
-      ];
+      });
 
-      setPendingPayments(mockPendingPayments);
-      setPaymentHistory(mockPaymentHistory);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // Transform sales data into payment format
+          const recentSales = result.data.slice(0, 7); // Get recent sales
+          
+          // Create pending payments (simulate insurance/mobile payments that need processing)
+          const mockPendingPayments = recentSales.slice(0, 2).map(sale => ({
+            id: sale.id,
+            transactionId: `TXN${sale.id.toString().padStart(3, '0')}`,
+            customerName: sale.customer_name || 'Walk-in Customer',
+            amount: sale.total_revenue,
+            items: [sale.name],
+            createdAt: sale.sale_date,
+            status: 'pending',
+            paymentMethod: sale.notes?.toLowerCase().includes('insurance') ? 'insurance' : 'mobile'
+          }));
+
+          // Create payment history from completed sales
+          const mockPaymentHistory = recentSales.slice(2).map(sale => ({
+            id: sale.id + 100,
+            transactionId: `TXN${sale.id.toString().padStart(3, '0')}`,
+            customerName: sale.customer_name || 'Walk-in Customer',
+            amount: sale.total_revenue,
+            paymentMethod: sale.notes?.toLowerCase().includes('card') ? 'card' : 
+                          sale.notes?.toLowerCase().includes('mobile') ? 'mobile' : 'cash',
+            processedAt: sale.sale_date,
+            status: 'completed',
+            reference: sale.notes?.toLowerCase().includes('card') ? `CARD${sale.id}` : 
+                      sale.notes?.toLowerCase().includes('mobile') ? `M-PESA${sale.id}` : `CASH${sale.id}`
+          }));
+
+          setPendingPayments(mockPendingPayments);
+          setPaymentHistory(mockPaymentHistory);
+        } else {
+          throw new Error(result.message);
+        }
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     } catch (error) {
       console.error('Error fetching payments:', error);
+      alert(`Failed to load payments: ${error.message}`);
+      setPendingPayments([]);
+      setPaymentHistory([]);
     }
   };
 

@@ -23,60 +23,52 @@ const CustomerManagement = () => {
 
   const fetchCustomers = async () => {
     try {
-      // Mock customer data
-      const mockCustomers = [
-        {
-          id: 1,
-          name: 'John Doe',
-          phone: '+255 123 456 789',
-          email: 'john.doe@email.com',
-          address: '123 Main Street, Dar es Salaam',
-          dateOfBirth: '1985-06-15',
-          allergies: 'Penicillin',
-          medicalConditions: 'Hypertension',
-          insuranceProvider: 'NHIF',
-          insuranceNumber: 'NHIF123456',
-          totalPurchases: 15,
-          totalSpent: 45000,
-          lastVisit: '2024-01-30',
-          createdAt: '2024-01-15'
-        },
-        {
-          id: 2,
-          name: 'Jane Smith',
-          phone: '+255 987 654 321',
-          email: 'jane.smith@email.com',
-          address: '456 Oak Avenue, Dar es Salaam',
-          dateOfBirth: '1990-03-22',
-          allergies: 'None',
-          medicalConditions: 'Diabetes Type 2',
-          insuranceProvider: 'AAR',
-          insuranceNumber: 'AAR789012',
-          totalPurchases: 8,
-          totalSpent: 28500,
-          lastVisit: '2024-01-29',
-          createdAt: '2024-01-10'
-        },
-        {
-          id: 3,
-          name: 'Mary Johnson',
-          phone: '+255 555 123 456',
-          email: 'mary.johnson@email.com',
-          address: '789 Pine Road, Dar es Salaam',
-          dateOfBirth: '1978-11-08',
-          allergies: 'Aspirin, Sulfa drugs',
-          medicalConditions: 'Asthma',
-          insuranceProvider: 'Jubilee',
-          insuranceNumber: 'JUB345678',
-          totalPurchases: 22,
-          totalSpent: 67800,
-          lastVisit: '2024-01-31',
-          createdAt: '2024-01-05'
+      // Get session token from localStorage
+      const sessionToken = localStorage.getItem('sessionToken');
+      
+      if (!sessionToken) {
+        throw new Error('Please log in to view customers');
+      }
+
+      const response = await fetch('http://localhost/pharmacy-system/api/modules/get_customers.php', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
         }
-      ];
-      setCustomers(mockCustomers);
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // Transform data to match component structure
+          const transformedCustomers = result.data.map(customer => ({
+            id: customer.id,
+            name: customer.name,
+            phone: customer.phone || 'Not provided',
+            email: customer.email || 'Not provided',
+            address: 'Not provided', // Can be added to database later
+            dateOfBirth: 'Not provided',
+            allergies: 'Not provided',
+            medicalConditions: 'Not provided',
+            insuranceProvider: 'Not provided',
+            insuranceNumber: 'Not provided',
+            totalPurchases: customer.total_purchases,
+            totalSpent: customer.total_spent,
+            lastVisit: customer.last_purchase,
+            createdAt: customer.first_purchase
+          }));
+          setCustomers(transformedCustomers);
+        } else {
+          throw new Error(result.message);
+        }
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     } catch (error) {
       console.error('Error fetching customers:', error);
+      alert(`Failed to load customers: ${error.message}`);
+      setCustomers([]);
     }
   };
 

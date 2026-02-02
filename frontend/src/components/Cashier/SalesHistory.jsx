@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 const SalesHistory = () => {
+  // eslint-disable-next-line no-unused-vars
   const { user } = useAuth();
   const [sales, setSales] = useState([]);
   const [filteredSales, setFilteredSales] = useState([]);
@@ -15,81 +16,63 @@ const SalesHistory = () => {
 
   useEffect(() => {
     fetchSalesHistory();
-  }, []);
+  }, []);  
 
   useEffect(() => {
     applyFilters();
-  }, [sales, filters]);
+  }, [sales, filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchSalesHistory = async () => {
     setLoading(true);
     try {
-      // Mock sales data
-      const mockSales = [
-        {
-          id: 1,
-          transaction_id: 'TXN001',
-          customer_name: 'John Doe',
-          items: [
-            { name: 'Paracetamol 500mg', quantity: 2, price: 500 },
-            { name: 'Vitamin C 1000mg', quantity: 1, price: 300 }
-          ],
-          subtotal: 1300,
-          discount: 0,
-          total: 1300,
-          payment_method: 'cash',
-          sale_date: '2024-01-31 14:30:25',
-          cashier: user?.full_name || 'Current User'
-        },
-        {
-          id: 2,
-          transaction_id: 'TXN002',
-          customer_name: 'Jane Smith',
-          items: [
-            { name: 'Amoxicillin 250mg', quantity: 1, price: 1000 },
-            { name: 'Ibuprofen 400mg', quantity: 3, price: 600 }
-          ],
-          subtotal: 2800,
-          discount: 140,
-          total: 2660,
-          payment_method: 'card',
-          sale_date: '2024-01-31 13:15:10',
-          cashier: user?.full_name || 'Current User'
-        },
-        {
-          id: 3,
-          transaction_id: 'TXN003',
-          customer_name: 'Walk-in Customer',
-          items: [
-            { name: 'Omeprazole 20mg', quantity: 1, price: 1200 }
-          ],
-          subtotal: 1200,
-          discount: 0,
-          total: 1200,
-          payment_method: 'mobile',
-          sale_date: '2024-01-31 12:45:30',
-          cashier: user?.full_name || 'Current User'
-        },
-        {
-          id: 4,
-          transaction_id: 'TXN004',
-          customer_name: 'Mary Johnson',
-          items: [
-            { name: 'Paracetamol 500mg', quantity: 1, price: 500 },
-            { name: 'Vitamin C 1000mg', quantity: 2, price: 300 },
-            { name: 'Ibuprofen 400mg', quantity: 1, price: 600 }
-          ],
-          subtotal: 1700,
-          discount: 85,
-          total: 1615,
-          payment_method: 'cash',
-          sale_date: '2024-01-31 11:20:15',
-          cashier: user?.full_name || 'Current User'
+      // Get session token from localStorage (correct key)
+      const sessionToken = localStorage.getItem('session_token');
+      
+      if (!sessionToken) {
+        throw new Error('Please log in to view sales history');
+      }
+
+      const response = await fetch('http://localhost/pharmacy-system/api/modules/get_sales.php', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
         }
-      ];
-      setSales(mockSales);
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // Transform the data to match our component structure
+          const transformedSales = result.data.map(sale => ({
+            id: sale.id,
+            transaction_id: `TXN${sale.id.toString().padStart(3, '0')}`,
+            customer_name: sale.customer_name || 'Walk-in Customer',
+            items: [{
+              name: sale.name,
+              quantity: sale.quantity_sold,
+              price: sale.total_revenue / sale.quantity_sold
+            }],
+            subtotal: sale.total_revenue,
+            discount: 0, // Can be calculated if discount info is available
+            total: sale.total_revenue,
+            payment_method: sale.notes?.toLowerCase().includes('cash') ? 'cash' : 
+                           sale.notes?.toLowerCase().includes('card') ? 'card' : 
+                           sale.notes?.toLowerCase().includes('mobile') ? 'mobile' : 'cash',
+            sale_date: sale.sale_date,
+            cashier: sale.employee_name || 'Unknown'
+          }));
+          setSales(transformedSales);
+        } else {
+          throw new Error(result.message);
+        }
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     } catch (error) {
       console.error('Error fetching sales history:', error);
+      alert(`Failed to load sales history: ${error.message}`);
+      setSales([]);
     } finally {
       setLoading(false);
     }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 const PointOfSale = ({ onStatsUpdate }) => {
-  const { user } = useAuth();
+  const { user, sessionToken } = useAuth();
   const [cart, setCart] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,7 +32,6 @@ const PointOfSale = ({ onStatsUpdate }) => {
       const data = await response.json();
       
       if (Array.isArray(data)) {
-        // Filter out items with zero or negative quantity
         const availableInventory = data.filter(item => item.quantity > 0);
         setInventory(availableInventory);
       } else {
@@ -41,7 +40,6 @@ const PointOfSale = ({ onStatsUpdate }) => {
       }
     } catch (error) {
       console.error('Error fetching inventory:', error);
-      // Show user-friendly error message
       alert('Failed to load inventory. Please check your connection and try again.');
       setInventory([]);
     } finally {
@@ -116,15 +114,28 @@ const PointOfSale = ({ onStatsUpdate }) => {
 
     setLoading(true);
     try {
-      // Get session token from localStorage
-      const sessionToken = localStorage.getItem('sessionToken');
+      // Use sessionToken from AuthContext instead of localStorage
+      const token = sessionToken || localStorage.getItem('session_token');
       
-      if (!sessionToken) {
+      if (!token) {
         alert('Please log in to process sales');
+        setLoading(false);
         return;
       }
 
-      // Prepare sale data
+      console.log('Processing sale with data:', {
+        items: cart.map(item => ({
+          inventory_id: item.inventory_id,
+          quantity: item.quantity,
+          name: item.name
+        })),
+        customer: customerInfo,
+        payment_method: paymentMethod,
+        subtotal: getSubtotal(),
+        discount: getDiscountAmount(),
+        total: getTotal()
+      });
+
       const saleData = {
         items: cart.map(item => ({
           inventory_id: item.inventory_id,
@@ -137,37 +148,80 @@ const PointOfSale = ({ onStatsUpdate }) => {
         total: getTotal()
       };
 
+      console.log('Sending request to process_sale.php...');
+      console.log('Using session token:', token ? 'Token present' : 'No token');
+      
+      // First test with simple endpoint
+      console.log('Testing with simple endpoint first...');
+      const testResponse = await fetch('http://localhost/pharmacy-system/api/modules/process_sale_simple.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ test: 'data' })
+      });
+      
+      console.log('Test response status:', testResponse.status);
+      const testResult = await testResponse.json();
+      console.log('Test result:', testResult);
+      
+      if (!testResponse.ok) {
+        throw new Error(`Test endpoint failed - HTTP ${testResponse.status}: ${testResponse.statusText}`);
+      }
+      
+      // Now try the actual endpoint
       const response = await fetch('http://localhost/pharmacy-system/api/modules/process_sale.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(saleData)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const result = await response.json();
+      console.log('API Response:', result);
 
       if (result.success) {
-        alert(`Sale processed successfully!\nTransaction ID: ${result.transaction_id}\nTotal: TSh ${getTotal().toLocaleString()}\nPayment: ${paymentMethod.toUpperCase()}\nCashier: ${user?.full_name || 'Unknown'}`);
+        alert(`✅ Sale processed successfully!\n\n📋 Transaction Details:\n• Transaction ID: ${result.transaction_id}\n• Total Amount: TSh ${getTotal().toLocaleString()}\n• Payment Method: ${paymentMethod.toUpperCase()}\n• Items Sold: ${cart.length}\n• Cashier: ${user?.full_name || 'Unknown'}\n• Date: ${new Date().toLocaleString()}`);
         
-        // Clear cart and customer info
+        // Clear the form
         setCart([]);
         setCustomerInfo({ name: '', phone: '', email: '' });
         setDiscount(0);
         
-        // Refresh inventory to show updated quantities
+        // Refresh inventory and stats
         await fetchInventory();
-        
-        // Update stats
         onStatsUpdate?.();
       } else {
         throw new Error(result.message || 'Failed to process sale');
       }
       
     } catch (error) {
-      console.error('Error processing sale:', error);
-      alert(`Error processing sale: ${error.message}`);
+      console.error('❌ Error processing sale:', error);
+      
+      // More detailed error message
+      let errorMessage = 'Failed to process sale. ';
+      
+      if (error.message.includes('HTTP 401')) {
+        errorMessage += 'Please log in again (session expired).';
+      } else if (error.message.includes('HTTP 500')) {
+        errorMessage += 'Server error. Please check if the database is running.';
+      } else if (error.message.includes('Failed to fetch')) {
+        errorMessage += 'Cannot connect to server. Please check if XAMPP is running.';
+      } else {
+        errorMessage += error.message;
+      }
+      
+      alert(`❌ ${errorMessage}\n\n🔧 Troubleshooting:\n• Check browser console for details\n• Ensure XAMPP is running\n• Verify you are logged in\n• Check internet connection`);
     } finally {
       setLoading(false);
     }
@@ -192,31 +246,17 @@ const PointOfSale = ({ onStatsUpdate }) => {
             <div style={cartCountStyle}>{cart.length} items</div>
             <div style={cartTotalStyle}>TSh {getTotal().toLocaleString()}</div>
           </div>
-          <button onClick={clearCart} 
-                  className="pos-clear-btn"
-                  style={clearButtonStyle} 
-                  disabled={cart.length === 0}
-                  onMouseEnter={(e) => {
-                    if (cart.length > 0) {
-                      e.target.style.background = '#e53e3e';
-                      e.target.style.color = '#fff';
-                      e.target.style.transform = 'translateY(-1px)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (cart.length > 0) {
-                      e.target.style.background = '#fed7d7';
-                      e.target.style.color = '#c53030';
-                      e.target.style.transform = 'translateY(0)';
-                    }
-                  }}
+          <button 
+            onClick={clearCart} 
+            style={clearButtonStyle} 
+            disabled={cart.length === 0}
           >
             🗑️ Clear Cart
           </button>
         </div>
       </div>
 
-      <div style={getResponsiveMainLayout()}>
+      <div style={mainLayoutStyle}>
         {/* Left Panel - Products */}
         <div style={leftPanelStyle}>
           {/* Search Section */}
@@ -251,18 +291,7 @@ const PointOfSale = ({ onStatsUpdate }) => {
               placeholder="Search by name, generic name, or category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pos-search-input"
               style={searchInputStyle}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#38a169';
-                e.target.style.boxShadow = '0 0 0 3px rgba(56, 161, 105, 0.1)';
-                e.target.style.background = '#fff';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#e2e8f0';
-                e.target.style.boxShadow = 'none';
-                e.target.style.background = '#fff';
-              }}
             />
           </div>
 
@@ -274,7 +303,7 @@ const PointOfSale = ({ onStatsUpdate }) => {
                 {filteredInventory.length} of {inventory.length} products
               </div>
             </div>
-            <div className="pos-products-grid" style={productsGridStyle}>
+            <div style={productsGridStyle}>
               {inventoryLoading ? (
                 <div style={{
                   display: 'flex',
@@ -285,7 +314,7 @@ const PointOfSale = ({ onStatsUpdate }) => {
                   color: '#718096'
                 }}>
                   <div style={{textAlign: 'center'}}>
-                    <div className="spinner" style={{margin: '0 auto 16px'}}></div>
+                    <div style={{margin: '0 auto 16px', width: '40px', height: '40px', border: '3px solid #f3f3f3', borderTop: '3px solid #667eea', borderRadius: '50%', animation: 'spin 1s linear infinite'}}></div>
                     <div>Loading products...</div>
                   </div>
                 </div>
@@ -309,66 +338,40 @@ const PointOfSale = ({ onStatsUpdate }) => {
                 </div>
               ) : (
                 filteredInventory.map(item => (
-                <div 
-                  key={item.inventory_id} 
-                  className="pos-product-card" 
-                  style={productCardStyle}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-4px)';
-                    e.target.style.boxShadow = '0 12px 40px rgba(0,0,0,0.15)';
-                    e.target.style.borderColor = '#38a169';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-                    e.target.style.borderColor = '#e2e8f0';
-                  }}
-                >
-                  <div style={productTopStyle}>
-                    <div style={productNameStyle}>{item.name}</div>
-                    <div style={productPriceStyle}>TSh {item.price.toLocaleString()}</div>
-                  </div>
-                  
-                  <div style={productMiddleStyle}>
-                    <div style={productGenericStyle}>{item.generic_name}</div>
-                    <div style={productCategoryBadgeStyle}>{item.category}</div>
-                  </div>
-                  
-                  <div style={productBottomStyle}>
-                    <div style={productStockInfoStyle}>
-                      <span style={stockLabelStyle}>Stock:</span>
-                      <span style={stockValueStyle}>{item.quantity}</span>
-                      <span style={batchLabelStyle}>Batch: {item.batch_number}</span>
+                  <div key={item.inventory_id} style={productCardStyle}>
+                    <div style={productTopStyle}>
+                      <div style={productNameStyle}>{item.name}</div>
+                      <div style={productPriceStyle}>TSh {item.price.toLocaleString()}</div>
                     </div>
-                    <button
-                      onClick={() => addToCart(item)}
-                      className={item.quantity === 0 ? '' : 'pos-add-to-cart-btn'}
-                      style={item.quantity === 0 ? addToCartDisabledStyle : addToCartButtonStyle}
-                      disabled={item.quantity === 0}
-                      onMouseEnter={(e) => {
-                        if (item.quantity > 0) {
-                          e.target.style.transform = 'translateY(-2px)';
-                          e.target.style.boxShadow = '0 8px 25px rgba(56, 161, 105, 0.4)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (item.quantity > 0) {
-                          e.target.style.transform = 'translateY(0)';
-                          e.target.style.boxShadow = 'none';
-                        }
-                      }}
-                    >
-                      {item.quantity === 0 ? '❌ Out of Stock' : '➕ Add to Cart'}
-                    </button>
+                    
+                    <div style={productMiddleStyle}>
+                      <div style={productGenericStyle}>{item.generic_name}</div>
+                      <div style={productCategoryBadgeStyle}>{item.category}</div>
+                    </div>
+                    
+                    <div style={productBottomStyle}>
+                      <div style={productStockInfoStyle}>
+                        <span style={stockLabelStyle}>Stock:</span>
+                        <span style={stockValueStyle}>{item.quantity}</span>
+                        <span style={batchLabelStyle}>Batch: {item.batch_number}</span>
+                      </div>
+                      <button
+                        onClick={() => addToCart(item)}
+                        style={item.quantity === 0 ? addToCartDisabledStyle : addToCartButtonStyle}
+                        disabled={item.quantity === 0}
+                      >
+                        {item.quantity === 0 ? '❌ Out of Stock' : '➕ Add to Cart'}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )))}
+                ))
+              )}
             </div>
           </div>
         </div>
 
         {/* Right Panel - Cart & Checkout */}
-        <div style={getResponsiveRightPanel()}>
+        <div style={rightPanelStyle}>
           {/* Shopping Cart */}
           <div style={cartSectionStyle}>
             <div style={cartHeaderStyle}>
@@ -376,31 +379,17 @@ const PointOfSale = ({ onStatsUpdate }) => {
               <div style={cartItemCountStyle}>{cart.length} items</div>
             </div>
             
-                <div style={cartContentStyle}>
+            <div style={cartContentStyle}>
               {cart.length === 0 ? (
                 <div style={emptyCartStyle}>
-                  <div className="pos-empty-cart-icon" style={emptyCartIconStyle}>🛒</div>
+                  <div style={emptyCartIconStyle}>🛒</div>
                   <div style={emptyCartTextStyle}>Your cart is empty</div>
                   <div style={emptyCartSubtextStyle}>Add products to get started</div>
                 </div>
               ) : (
-                <div className="pos-cart-items" style={cartItemsListStyle}>
+                <div style={cartItemsListStyle}>
                   {cart.map(item => (
-                    <div 
-                      key={item.inventory_id} 
-                      className="pos-cart-item"
-                      style={cartItemStyle}
-                      onMouseEnter={(e) => {
-                        e.target.style.background = '#fff';
-                        e.target.style.transform = 'translateX(4px)';
-                        e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.background = '#f8fafc';
-                        e.target.style.transform = 'translateX(0)';
-                        e.target.style.boxShadow = 'none';
-                      }}
-                    >
+                    <div key={item.inventory_id} style={cartItemStyle}>
                       <div style={cartItemLeftStyle}>
                         <div style={cartItemNameStyle}>{item.name}</div>
                         <div style={cartItemPriceStyle}>TSh {item.price.toLocaleString()} each</div>
@@ -410,53 +399,26 @@ const PointOfSale = ({ onStatsUpdate }) => {
                         <div style={quantityControlsStyle}>
                           <button
                             onClick={() => updateCartQuantity(item.inventory_id, item.quantity - 1)}
-                            className="pos-quantity-btn"
                             style={quantityButtonStyle}
-                            onMouseEnter={(e) => {
-                              e.target.style.transform = 'scale(1.1)';
-                              e.target.style.boxShadow = '0 4px 12px rgba(49, 130, 206, 0.3)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.transform = 'scale(1)';
-                              e.target.style.boxShadow = 'none';
-                            }}
                           >
                             −
                           </button>
                           <span style={quantityDisplayStyle}>{item.quantity}</span>
                           <button
                             onClick={() => updateCartQuantity(item.inventory_id, item.quantity + 1)}
-                            className="pos-quantity-btn"
                             style={quantityButtonStyle}
-                            onMouseEnter={(e) => {
-                              e.target.style.transform = 'scale(1.1)';
-                              e.target.style.boxShadow = '0 4px 12px rgba(49, 130, 206, 0.3)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.transform = 'scale(1)';
-                              e.target.style.boxShadow = 'none';
-                            }}
                           >
                             +
                           </button>
                         </div>
                         
-                        <div className="pos-total-amount" style={itemTotalStyle}>
+                        <div style={itemTotalStyle}>
                           TSh {(item.price * item.quantity).toLocaleString()}
                         </div>
                         
                         <button
                           onClick={() => removeFromCart(item.inventory_id)}
-                          className="pos-remove-btn"
                           style={removeItemButtonStyle}
-                          onMouseEnter={(e) => {
-                            e.target.style.transform = 'scale(1.1)';
-                            e.target.style.boxShadow = '0 4px 12px rgba(229, 62, 62, 0.3)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.transform = 'scale(1)';
-                            e.target.style.boxShadow = 'none';
-                          }}
                         >
                           ✕
                         </button>
@@ -478,36 +440,14 @@ const PointOfSale = ({ onStatsUpdate }) => {
                   placeholder="Customer Name"
                   value={customerInfo.name}
                   onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-                  className="pos-customer-input"
                   style={customerInputStyle}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#3182ce';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(49, 130, 206, 0.1)';
-                    e.target.style.background = '#fff';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e2e8f0';
-                    e.target.style.boxShadow = 'none';
-                    e.target.style.background = '#fff';
-                  }}
                 />
                 <input
                   type="tel"
                   placeholder="Phone Number"
                   value={customerInfo.phone}
                   onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                  className="pos-customer-input"
                   style={customerInputStyle}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#3182ce';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(49, 130, 206, 0.1)';
-                    e.target.style.background = '#fff';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e2e8f0';
-                    e.target.style.boxShadow = 'none';
-                    e.target.style.background = '#fff';
-                  }}
                 />
               </div>
               <input
@@ -515,18 +455,7 @@ const PointOfSale = ({ onStatsUpdate }) => {
                 placeholder="Email Address (Optional)"
                 value={customerInfo.email}
                 onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-                className="pos-customer-input"
                 style={customerInputFullStyle}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#3182ce';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(49, 130, 206, 0.1)';
-                  e.target.style.background = '#fff';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#e2e8f0';
-                  e.target.style.boxShadow = 'none';
-                  e.target.style.background = '#fff';
-                }}
               />
             </div>
           </div>
@@ -541,18 +470,7 @@ const PointOfSale = ({ onStatsUpdate }) => {
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="pos-payment-select"
                   style={paymentSelectStyle}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#3182ce';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(49, 130, 206, 0.1)';
-                    e.target.style.background = '#fff';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e2e8f0';
-                    e.target.style.boxShadow = 'none';
-                    e.target.style.background = '#fff';
-                  }}
                 >
                   <option value="cash">💵 Cash</option>
                   <option value="card">💳 Card</option>
@@ -569,60 +487,58 @@ const PointOfSale = ({ onStatsUpdate }) => {
                   max="50"
                   value={discount}
                   onChange={(e) => setDiscount(Math.min(50, Math.max(0, parseFloat(e.target.value) || 0)))}
-                  className="pos-discount-input"
                   style={discountInputStyle}
                   placeholder="0"
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#d69e2e';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(214, 158, 46, 0.1)';
-                    e.target.style.background = '#fff';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e2e8f0';
-                    e.target.style.boxShadow = 'none';
-                    e.target.style.background = '#fff';
-                  }}
                 />
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Totals */}
-            <div style={totalsContainerStyle}>
-              <div style={totalRowStyle}>
-                <span>Subtotal:</span>
-                <span>TSh {getSubtotal().toLocaleString()}</span>
-              </div>
-              {discount > 0 && (
-                <div style={totalRowStyle}>
-                  <span>Discount ({discount}%):</span>
-                  <span style={discountAmountStyle}>-TSh {getDiscountAmount().toLocaleString()}</span>
-                </div>
-              )}
-              <div style={finalTotalRowStyle}>
-                <span>Total Amount:</span>
-                <span className="pos-total-amount">TSh {getTotal().toLocaleString()}</span>
-              </div>
+      {/* Sticky Checkout Footer */}
+      <div style={stickyCheckoutFooterStyle}>
+        <div style={stickyContentStyle}>
+          <div style={quickTotalsStyle}>
+            <div style={quickTotalItemStyle}>
+              <span style={quickTotalLabelStyle}>Items:</span>
+              <span style={quickTotalValueStyle}>{cart.length}</span>
             </div>
+            <div style={quickTotalItemStyle}>
+              <span style={quickTotalLabelStyle}>Subtotal:</span>
+              <span style={quickTotalValueStyle}>TSh {getSubtotal().toLocaleString()}</span>
+            </div>
+            {discount > 0 && (
+              <div style={quickTotalItemStyle}>
+                <span style={quickTotalLabelStyle}>Discount:</span>
+                <span style={quickDiscountStyle}>-TSh {getDiscountAmount().toLocaleString()}</span>
+              </div>
+            )}
+            <div style={quickTotalItemStyle}>
+              <span style={quickTotalMainLabelStyle}>TOTAL:</span>
+              <span style={quickTotalMainValueStyle}>TSh {getTotal().toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div style={stickyButtonContainerStyle}>
+            {cart.length === 0 && (
+              <div style={stickyInstructionsStyle}>
+                <div style={{ fontWeight: '600', marginBottom: '4px' }}>
+                  🛒 Ready to make a sale?
+                </div>
+                <div>
+                  Search for products and click "Add to Cart" to get started!
+                </div>
+              </div>
+            )}
 
             <button
               onClick={processSale}
-              className={cart.length === 0 || loading ? '' : 'pos-checkout-btn'}
-              style={cart.length === 0 || loading ? checkoutButtonDisabledStyle : checkoutButtonStyle}
+              style={cart.length === 0 || loading ? stickyCheckoutButtonDisabledStyle : stickyCheckoutButtonStyle}
               disabled={cart.length === 0 || loading}
-              onMouseEnter={(e) => {
-                if (cart.length > 0 && !loading) {
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 12px 40px rgba(49, 130, 206, 0.5)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (cart.length > 0 && !loading) {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = 'none';
-                }
-              }}
             >
-              {loading ? '⏳ Processing Sale...' : '💰 Process Sale'}
+              {loading ? '⏳ Processing Sale...' : 
+               cart.length === 0 ? '🛒 Add Items to Cart First' : '💰 Process Sale'}
             </button>
           </div>
         </div>
@@ -635,7 +551,8 @@ const PointOfSale = ({ onStatsUpdate }) => {
 const containerStyle = {
   padding: '20px',
   background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-  minHeight: '100vh'
+  minHeight: '100vh',
+  paddingBottom: '120px'
 };
 
 const headerStyle = {
@@ -650,9 +567,7 @@ const headerStyle = {
   border: '1px solid #e2e8f0'
 };
 
-const headerLeftStyle = {
-  flex: 1
-};
+const headerLeftStyle = { flex: 1 };
 
 const titleStyle = {
   margin: 0,
@@ -674,9 +589,7 @@ const headerRightStyle = {
   gap: '16px'
 };
 
-const cartSummaryStyle = {
-  textAlign: 'right'
-};
+const cartSummaryStyle = { textAlign: 'right' };
 
 const cartCountStyle = {
   fontSize: '12px',
@@ -724,7 +637,6 @@ const rightPanelStyle = {
   maxWidth: '450px'
 };
 
-// Search Section
 const searchSectionStyle = {
   background: 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)',
   borderRadius: '16px',
@@ -765,7 +677,6 @@ const searchInputStyle = {
   outline: 'none'
 };
 
-// Products Section
 const productsContainerStyle = {
   background: 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)',
   borderRadius: '16px',
@@ -822,9 +733,7 @@ const productPriceStyle = {
   minWidth: 'fit-content'
 };
 
-const productMiddleStyle = {
-  marginBottom: '12px'
-};
+const productMiddleStyle = { marginBottom: '12px' };
 
 const productGenericStyle = {
   fontSize: '13px',
@@ -854,19 +763,9 @@ const productStockInfoStyle = {
   fontSize: '12px'
 };
 
-const stockLabelStyle = {
-  color: '#718096'
-};
-
-const stockValueStyle = {
-  fontWeight: '600',
-  color: '#2d3748'
-};
-
-const batchLabelStyle = {
-  color: '#a0aec0',
-  marginLeft: 'auto'
-};
+const stockLabelStyle = { color: '#718096' };
+const stockValueStyle = { fontWeight: '600', color: '#2d3748' };
+const batchLabelStyle = { color: '#a0aec0', marginLeft: 'auto' };
 
 const addToCartButtonStyle = {
   width: '100%',
@@ -888,7 +787,6 @@ const addToCartDisabledStyle = {
   cursor: 'not-allowed'
 };
 
-// Cart Section
 const cartSectionStyle = {
   background: 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)',
   borderRadius: '16px',
@@ -936,9 +834,7 @@ const emptyCartTextStyle = {
   marginBottom: '4px'
 };
 
-const emptyCartSubtextStyle = {
-  fontSize: '14px'
-};
+const emptyCartSubtextStyle = { fontSize: '14px' };
 
 const cartItemsListStyle = {
   height: '100%',
@@ -957,9 +853,7 @@ const cartItemStyle = {
   border: '1px solid #e2e8f0'
 };
 
-const cartItemLeftStyle = {
-  flex: 1
-};
+const cartItemLeftStyle = { flex: 1 };
 
 const cartItemNameStyle = {
   fontSize: '14px',
@@ -1033,7 +927,6 @@ const removeItemButtonStyle = {
   fontSize: '12px'
 };
 
-// Customer Section
 const customerSectionStyle = {
   background: 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)',
   borderRadius: '16px',
@@ -1068,7 +961,6 @@ const customerInputFullStyle = {
   width: '100%'
 };
 
-// Checkout Section
 const checkoutSectionStyle = {
   background: 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)',
   borderRadius: '16px',
@@ -1126,80 +1018,116 @@ const discountInputStyle = {
   textAlign: 'center'
 };
 
-const totalsContainerStyle = {
-  background: '#f8fafc',
-  borderRadius: '8px',
-  padding: '16px',
-  marginBottom: '16px',
-  border: '1px solid #e2e8f0'
+// Sticky Footer Styles
+const stickyCheckoutFooterStyle = {
+  position: 'fixed',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  background: 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)',
+  borderTop: '3px solid #3182ce',
+  boxShadow: '0 -8px 32px rgba(0,0,0,0.15)',
+  zIndex: 1000,
+  padding: '16px 20px'
 };
 
-const totalRowStyle = {
+const stickyContentStyle = {
+  maxWidth: '1400px',
+  margin: '0 auto',
   display: 'flex',
   justifyContent: 'space-between',
-  marginBottom: '8px',
-  fontSize: '14px',
-  color: '#4a5568'
+  alignItems: 'center',
+  gap: '24px',
+  flexWrap: 'wrap'
 };
 
-const discountAmountStyle = {
-  color: '#e53e3e',
-  fontWeight: '600'
-};
-
-const finalTotalRowStyle = {
+const quickTotalsStyle = {
   display: 'flex',
-  justifyContent: 'space-between',
-  fontSize: '18px',
+  alignItems: 'center',
+  gap: '24px',
+  flex: 1,
+  flexWrap: 'wrap',
+  minWidth: '300px'
+};
+
+const quickTotalItemStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '2px'
+};
+
+const quickTotalLabelStyle = {
+  fontSize: '12px',
+  color: '#718096',
+  fontWeight: '500'
+};
+
+const quickTotalValueStyle = {
+  fontSize: '16px',
   fontWeight: '700',
-  color: '#2d3748',
-  borderTop: '1px solid #e2e8f0',
-  paddingTop: '8px',
-  marginTop: '8px'
+  color: '#2d3748'
 };
 
-const checkoutButtonStyle = {
+const quickDiscountStyle = {
+  fontSize: '16px',
+  fontWeight: '700',
+  color: '#e53e3e'
+};
+
+const quickTotalMainLabelStyle = {
+  fontSize: '14px',
+  color: '#2d3748',
+  fontWeight: '700'
+};
+
+const quickTotalMainValueStyle = {
+  fontSize: '24px',
+  fontWeight: '900',
+  color: '#38a169',
+  textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+};
+
+const stickyButtonContainerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '12px',
+  minWidth: '300px'
+};
+
+const stickyInstructionsStyle = {
+  background: '#fef5e7',
+  border: '1px solid #f6ad55',
+  borderRadius: '8px',
+  padding: '8px 12px',
+  textAlign: 'center',
+  color: '#c05621',
+  fontSize: '12px',
+  width: '100%'
+};
+
+const stickyCheckoutButtonStyle = {
   width: '100%',
   background: 'linear-gradient(135deg, #3182ce 0%, #2c5282 100%)',
   color: '#fff',
   border: 'none',
-  padding: '14px',
-  borderRadius: '8px',
+  padding: '16px 24px',
+  borderRadius: '12px',
   cursor: 'pointer',
   fontWeight: '700',
-  fontSize: '16px',
-  transition: 'all 0.3s'
+  fontSize: '18px',
+  transition: 'all 0.3s',
+  boxShadow: '0 8px 25px rgba(49, 130, 206, 0.3)',
+  minHeight: '60px'
 };
 
-const checkoutButtonDisabledStyle = {
-  ...checkoutButtonStyle,
-  background: '#e2e8f0',
-  color: '#a0aec0',
-  cursor: 'not-allowed'
-};
-
-// Responsive styles for smaller screens
-const getResponsiveMainLayout = () => {
-  if (window.innerWidth < 1200) {
-    return {
-      ...mainLayoutStyle,
-      gridTemplateColumns: '1fr',
-      gridTemplateRows: 'auto auto',
-      height: 'auto'
-    };
-  }
-  return mainLayoutStyle;
-};
-
-const getResponsiveRightPanel = () => {
-  if (window.innerWidth < 1200) {
-    return {
-      ...rightPanelStyle,
-      minWidth: 'auto',
-      maxWidth: 'none'
-    };
-  }
-  return rightPanelStyle;
+const stickyCheckoutButtonDisabledStyle = {
+  ...stickyCheckoutButtonStyle,
+  background: 'linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%)',
+  color: '#4a5568',
+  cursor: 'not-allowed',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
 };
 
 export default PointOfSale;
