@@ -1,4 +1,8 @@
 <?php
+// Suppress warnings and errors
+error_reporting(0);
+ini_set('display_errors', 0);
+
 // Database configuration
 $host = "localhost";
 $db_name = "pharmacy_system";
@@ -6,11 +10,14 @@ $username = "root";
 $password = "";
 
 // Create mysqli connection
-$conn = new mysqli($host, $username, $password, $db_name);
+$conn = @new mysqli($host, $username, $password, $db_name);
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    if (headers_sent() === false) {
+        header('Content-Type: application/json');
+    }
+    die(json_encode(['success' => false, 'message' => 'Database connection failed']));
 }
 
 // Set charset to utf8

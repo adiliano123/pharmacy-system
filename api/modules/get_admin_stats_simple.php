@@ -1,4 +1,8 @@
 <?php
+ob_start();
+error_reporting(0);
+ini_set('display_errors', 0);
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -124,6 +128,7 @@ try {
         ]
     ];
     
+    ob_clean();
     echo json_encode([
         'success' => true,
         'data' => $stats,
@@ -132,6 +137,9 @@ try {
     
 } catch (Exception $e) {
     http_response_code(500);
+    ob_clean();
     echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
 }
+
+ob_end_flush();
 ?>

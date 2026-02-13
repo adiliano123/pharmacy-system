@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import UserProfile from '../Layout/UserProfile';
 import UserManagement from './UserManagement';
 import SystemSettings from './SystemSettings';
 import ReportsAnalytics from './ReportsAnalytics';
@@ -188,34 +189,37 @@ const AdminDashboard = () => {
             Welcome, {user?.full_name}! Manage your pharmacy system and operations.
           </p>
         </div>
-        <div style={statsGridStyle}>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>👥</div>
-            <div>
-              <div style={statValueStyle}>{dashboardStats.activeUsers}/{dashboardStats.totalUsers}</div>
-              <div style={statLabelStyle}>Active Users</div>
-            </div>
+        <UserProfile />
+      </div>
+      
+      {/* Stats Grid */}
+      <div style={statsGridStyle}>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>👥</div>
+          <div>
+            <div style={statValueStyle}>{dashboardStats.activeUsers}/{dashboardStats.totalUsers}</div>
+            <div style={statLabelStyle}>Active Users</div>
           </div>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>💰</div>
-            <div>
-              <div style={statValueStyle}>TSh {(dashboardStats.monthlyRevenue / 1000).toFixed(0)}K</div>
-              <div style={statLabelStyle}>Monthly Revenue</div>
-            </div>
+        </div>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>💰</div>
+          <div>
+            <div style={statValueStyle}>TSh {(dashboardStats.monthlyRevenue / 1000).toFixed(0)}K</div>
+            <div style={statLabelStyle}>Monthly Revenue</div>
           </div>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>📦</div>
-            <div>
-              <div style={statValueStyle}>TSh {(dashboardStats.inventoryValue / 1000).toFixed(0)}K</div>
-              <div style={statLabelStyle}>Inventory Value</div>
-            </div>
+        </div>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>📦</div>
+          <div>
+            <div style={statValueStyle}>TSh {(dashboardStats.inventoryValue / 1000).toFixed(0)}K</div>
+            <div style={statLabelStyle}>Inventory Value</div>
           </div>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>⚠️</div>
-            <div>
-              <div style={statValueStyle}>{dashboardStats.lowStockAlerts}</div>
-              <div style={statLabelStyle}>Low Stock Alerts</div>
-            </div>
+        </div>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>⚠️</div>
+          <div>
+            <div style={statValueStyle}>{dashboardStats.lowStockAlerts}</div>
+            <div style={statLabelStyle}>Low Stock Alerts</div>
           </div>
         </div>
       </div>

@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
       const savedUser = localStorage.getItem('user');
       
       if (token && savedUser) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSessionToken(token);
         try {
           setUser(JSON.parse(savedUser));

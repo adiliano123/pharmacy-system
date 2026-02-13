@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import UserProfile from '../Layout/UserProfile';
 import PointOfSale from './PointOfSale';
 import SalesHistory from './SalesHistory';
 import CustomerManagement from './CustomerManagement';
@@ -148,21 +149,25 @@ const CashierDashboard = () => {
             Welcome, {user?.full_name}! Ready to serve customers today.
           </p>
         </div>
-        <div style={statsGridStyle}>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>💰</div>
-            <div>
-              <div style={statValueStyle}>TSh {dashboardStats.todaySales.toLocaleString()}</div>
-              <div style={statLabelStyle}>Today's Sales</div>
-            </div>
+        <UserProfile />
+      </div>
+      
+      {/* Stats Grid */}
+      <div style={statsGridStyle}>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>💰</div>
+          <div>
+            <div style={statValueStyle}>TSh {dashboardStats.todaySales.toLocaleString()}</div>
+            <div style={statLabelStyle}>Today's Sales</div>
           </div>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>🛒</div>
-            <div>
-              <div style={statValueStyle}>{dashboardStats.todayTransactions}</div>
-              <div style={statLabelStyle}>Transactions</div>
-            </div>
+        </div>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>🛒</div>
+          <div>
+            <div style={statValueStyle}>{dashboardStats.todayTransactions}</div>
+            <div style={statLabelStyle}>Transactions</div>
           </div>
+        </div>
           <div style={statCardStyle}>
             <div style={statIconStyle}>👥</div>
             <div>

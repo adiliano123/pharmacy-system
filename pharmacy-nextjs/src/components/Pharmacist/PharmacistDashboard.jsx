@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import UserProfile from '../Layout/UserProfile';
 import PrescriptionVerification from './PrescriptionVerification';
 import DrugInteractionChecker from './DrugInteractionChecker';
 import PatientCounseling from './PatientCounseling';
@@ -180,34 +181,37 @@ const PharmacistDashboard = () => {
             Welcome, {user?.full_name}! Manage clinical duties and patient care.
           </p>
         </div>
-        <div style={statsGridStyle}>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>📋</div>
-            <div>
-              <div style={statValueStyle}>{dashboardStats.pendingPrescriptions}</div>
-              <div style={statLabelStyle}>Pending Prescriptions</div>
-            </div>
+        <UserProfile />
+      </div>
+      
+      {/* Stats Grid */}
+      <div style={statsGridStyle}>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>📋</div>
+          <div>
+            <div style={statValueStyle}>{dashboardStats.pendingPrescriptions}</div>
+            <div style={statLabelStyle}>Pending Prescriptions</div>
           </div>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>📅</div>
-            <div>
-              <div style={statValueStyle}>{dashboardStats.expiringMedicines}</div>
-              <div style={statLabelStyle}>Expiring Soon</div>
-            </div>
+        </div>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>📅</div>
+          <div>
+            <div style={statValueStyle}>{dashboardStats.expiringMedicines}</div>
+            <div style={statLabelStyle}>Expiring Soon</div>
           </div>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>📦</div>
-            <div>
-              <div style={statValueStyle}>{dashboardStats.lowStockItems || 0}</div>
-              <div style={statLabelStyle}>Low Stock Items</div>
-            </div>
+        </div>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>📦</div>
+          <div>
+            <div style={statValueStyle}>{dashboardStats.lowStockItems || 0}</div>
+            <div style={statLabelStyle}>Low Stock Items</div>
           </div>
-          <div style={statCardStyle}>
-            <div style={statIconStyle}>💰</div>
-            <div>
-              <div style={statValueStyle}>TSh {((dashboardStats.inventoryValue || 0) / 1000).toFixed(0)}K</div>
-              <div style={statLabelStyle}>Inventory Value</div>
-            </div>
+        </div>
+        <div style={statCardStyle}>
+          <div style={statIconStyle}>💰</div>
+          <div>
+            <div style={statValueStyle}>TSh {((dashboardStats.inventoryValue || 0) / 1000).toFixed(0)}K</div>
+            <div style={statLabelStyle}>Inventory Value</div>
           </div>
         </div>
       </div>
@@ -261,7 +265,7 @@ const PharmacistDashboard = () => {
             <div style={overviewIconStyle}>💰</div>
             <div>
               <div style={overviewValueStyle}>TSh {((dashboardStats.todayRevenue || 0) / 1000).toFixed(0)}K</div>
-              <div style={overviewLabelStyle}>Today's Sales</div>
+              <div style={overviewLabelStyle}>Today&apos;s Sales</div>
             </div>
           </div>
           <div style={overviewCardStyle}>

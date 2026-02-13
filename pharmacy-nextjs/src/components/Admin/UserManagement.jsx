@@ -28,14 +28,20 @@ const UserManagement = ({ onStatsUpdate }) => {
       
       // Try to fetch from API first
       try {
-        const response = await fetch('/api/modules/admin_users.php?action=list');
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/pharmacy-system/api';
+        const response = await fetch(`${API_URL}/modules/admin_users.php?action=list`);
         const contentType = response.headers.get('content-type');
         
         if (contentType && contentType.includes('application/json')) {
-          const data = await response.json();
-          if (data.success) {
-            setUsers(data.users);
-            return;
+          const text = await response.text();
+          try {
+            const data = JSON.parse(text);
+            if (data.success) {
+              setUsers(data.users);
+              return;
+            }
+          } catch (jsonError) {
+            console.warn('JSON parse error:', jsonError, 'Response:', text.substring(0, 200));
           }
         }
       } catch (apiError) {
@@ -90,7 +96,8 @@ const UserManagement = ({ onStatsUpdate }) => {
     try {
       // Try API first
       try {
-        const url = editingUser ? '/api/modules/admin_users.php?action=update' : '/api/modules/admin_users.php?action=create';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/pharmacy-system/api';
+        const url = editingUser ? `${API_URL}/modules/admin_users.php?action=update` : `${API_URL}/modules/admin_users.php?action=create`;
         const payload = editingUser ? { ...formData, user_id: editingUser.user_id } : formData;
         
         const response = await fetch(url, {
@@ -146,7 +153,8 @@ const UserManagement = ({ onStatsUpdate }) => {
     try {
       // Try API first
       try {
-        const response = await fetch('/api/modules/admin_users.php?action=delete', {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/pharmacy-system/api';
+        const response = await fetch(`${API_URL}/modules/admin_users.php?action=delete`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -182,7 +190,8 @@ const UserManagement = ({ onStatsUpdate }) => {
     try {
       // Try API first
       try {
-        const response = await fetch('/api/modules/admin_users.php?action=toggle_status', {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/pharmacy-system/api';
+        const response = await fetch(`${API_URL}/modules/admin_users.php?action=toggle_status`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -1,4 +1,11 @@
 <?php
+// Start output buffering to prevent any output before JSON
+ob_start();
+
+// Suppress error display
+error_reporting(0);
+ini_set('display_errors', 0);
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -71,6 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Return user data and session token
             unset($user['password']); // Don't send password back
             
+            // Clear any output buffer and send clean JSON
+            ob_clean();
             echo json_encode([
                 'success' => true,
                 'message' => 'Login successful',
@@ -79,15 +88,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
         } else {
             http_response_code(401);
+            ob_clean();
             echo json_encode(['success' => false, 'message' => 'Invalid username or password']);
         }
         
     } catch (Exception $e) {
         http_response_code(500);
+        ob_clean();
         echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
     }
 } else {
     http_response_code(405);
+    ob_clean();
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
 }
+
+// Flush the output buffer
+ob_end_flush();
 ?>
