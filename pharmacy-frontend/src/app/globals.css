@@ -24,3 +24,375 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Dark Mode Styles */
+.dark-mode {
+  background-color: #1a1a1a !important;
+}
+
+/* Text Colors - All text becomes white */
+.dark-mode *,
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6,
+.dark-mode p,
+.dark-mode span,
+.dark-mode div,
+.dark-mode label,
+.dark-mode a,
+.dark-mode td,
+.dark-mode th,
+.dark-mode li {
+  color: white !important;
+}
+
+/* Form Elements */
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+  color: white !important;
+}
+
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+  color: #999 !important;
+}
+
+.dark-mode input:focus,
+.dark-mode textarea:focus,
+.dark-mode select:focus {
+  border-color: #666 !important;
+  background-color: #333 !important;
+}
+
+/* Backgrounds */
+.dark-mode .bg-white {
+  background-color: #2d2d2d !important;
+}
+
+.dark-mode .bg-gray-50 {
+  background-color: #1a1a1a !important;
+}
+
+.dark-mode .bg-gray-100 {
+  background-color: #2d2d2d !important;
+}
+
+.dark-mode .bg-gray-200 {
+  background-color: #333 !important;
+}
+
+/* Borders */
+.dark-mode .border-gray-200,
+.dark-mode .border-gray-300,
+.dark-mode .border {
+  border-color: #404040 !important;
+}
+
+/* Buttons - Keep their colors but ensure text is visible */
+.dark-mode button {
+  color: white !important;
+}
+
+.dark-mode .bg-blue-600,
+.dark-mode .bg-blue-700 {
+  background-color: #2563eb !important;
+}
+
+.dark-mode .bg-green-600,
+.dark-mode .bg-green-700 {
+  background-color: #16a34a !important;
+}
+
+.dark-mode .bg-red-600,
+.dark-mode .bg-red-700 {
+  background-color: #dc2626 !important;
+}
+
+.dark-mode .bg-yellow-600,
+.dark-mode .bg-yellow-700 {
+  background-color: #ca8a04 !important;
+}
+
+.dark-mode .bg-orange-600,
+.dark-mode .bg-orange-700 {
+  background-color: #ea580c !important;
+}
+
+.dark-mode .bg-purple-600,
+.dark-mode .bg-purple-700 {
+  background-color: #9333ea !important;
+}
+
+/* Hover States */
+.dark-mode .hover\:bg-gray-50:hover,
+.dark-mode .hover\:bg-gray-100:hover {
+  background-color: #333 !important;
+}
+
+.dark-mode .hover\:bg-blue-50:hover {
+  background-color: #1e3a8a !important;
+}
+
+.dark-mode .hover\:bg-green-50:hover {
+  background-color: #14532d !important;
+}
+
+.dark-mode .hover\:bg-red-50:hover {
+  background-color: #7f1d1d !important;
+}
+
+/* Cards and Containers */
+.dark-mode .shadow-md,
+.dark-mode .shadow-lg,
+.dark-mode .shadow-xl,
+.dark-mode .shadow-2xl {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Tables */
+.dark-mode table {
+  background-color: #2d2d2d !important;
+}
+
+.dark-mode thead {
+  background-color: #1a1a1a !important;
+}
+
+.dark-mode tbody tr:hover {
+  background-color: #333 !important;
+}
+
+.dark-mode tbody tr {
+  border-color: #404040 !important;
+}
+
+/* Badges and Status */
+.dark-mode .bg-green-100 {
+  background-color: #14532d !important;
+}
+
+.dark-mode .bg-red-100 {
+  background-color: #7f1d1d !important;
+}
+
+.dark-mode .bg-yellow-100 {
+  background-color: #713f12 !important;
+}
+
+.dark-mode .bg-orange-100 {
+  background-color: #7c2d12 !important;
+}
+
+.dark-mode .bg-blue-100 {
+  background-color: #1e3a8a !important;
+}
+
+.dark-mode .bg-purple-100 {
+  background-color: #581c87 !important;
+}
+
+/* Specific Text Colors that should remain colored */
+.dark-mode .text-blue-600,
+.dark-mode .text-blue-700 {
+  color: #60a5fa !important;
+}
+
+.dark-mode .text-green-600,
+.dark-mode .text-green-700 {
+  color: #4ade80 !important;
+}
+
+.dark-mode .text-red-600,
+.dark-mode .text-red-700 {
+  color: #f87171 !important;
+}
+
+.dark-mode .text-yellow-600,
+.dark-mode .text-yellow-700 {
+  color: #fbbf24 !important;
+}
+
+.dark-mode .text-orange-600,
+.dark-mode .text-orange-700 {
+  color: #fb923c !important;
+}
+
+.dark-mode .text-purple-600,
+.dark-mode .text-purple-700 {
+  color: #c084fc !important;
+}
+
+/* Sidebar */
+.dark-mode aside {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+}
+
+/* Header */
+.dark-mode header {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+}
+
+/* Footer */
+.dark-mode footer {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+}
+
+/* Dropdown Menus */
+.dark-mode .absolute {
+  background-color: #2d2d2d !important;
+}
+
+/* Icons and Emojis - Keep visible */
+.dark-mode svg {
+  color: white !important;
+}
+
+/* Disabled States */
+.dark-mode button:disabled,
+.dark-mode input:disabled,
+.dark-mode select:disabled,
+.dark-mode textarea:disabled {
+  opacity: 0.5 !important;
+  background-color: #1a1a1a !important;
+}
+
+/* Loading States */
+.dark-mode .animate-spin,
+.dark-mode .animate-bounce {
+  color: white !important;
+}
+
+/* Charts and Graphs */
+.dark-mode canvas {
+  filter: invert(0.9) hue-rotate(180deg);
+}
+
+/* Print Styles - Disable dark mode for printing */
+@media print {
+  .dark-mode {
+    background-color: white !important;
+  }
+  
+  .dark-mode * {
+    color: black !important;
+  }
+  
+  .dark-mode .bg-white,
+  .dark-mode .bg-gray-50,
+  .dark-mode .bg-gray-100 {
+    background-color: white !important;
+  }
+}
+
+/* Quick Action Cards and Colored Backgrounds */
+.dark-mode .bg-blue-50 {
+  background-color: #1e3a8a !important;
+}
+
+.dark-mode .bg-green-50 {
+  background-color: #14532d !important;
+}
+
+.dark-mode .bg-red-50 {
+  background-color: #7f1d1d !important;
+}
+
+.dark-mode .bg-yellow-50 {
+  background-color: #713f12 !important;
+}
+
+.dark-mode .bg-orange-50 {
+  background-color: #7c2d12 !important;
+}
+
+.dark-mode .bg-purple-50 {
+  background-color: #581c87 !important;
+}
+
+/* Ensure text in colored backgrounds is white */
+.dark-mode .bg-blue-50 *,
+.dark-mode .bg-green-50 *,
+.dark-mode .bg-red-50 *,
+.dark-mode .bg-yellow-50 *,
+.dark-mode .bg-orange-50 *,
+.dark-mode .bg-purple-50 * {
+  color: white !important;
+}
+
+/* Hover states for colored backgrounds */
+.dark-mode .hover\:bg-blue-100:hover {
+  background-color: #1e40af !important;
+}
+
+.dark-mode .hover\:bg-green-100:hover {
+  background-color: #166534 !important;
+}
+
+.dark-mode .hover\:bg-red-100:hover {
+  background-color: #991b1b !important;
+}
+
+.dark-mode .hover\:bg-yellow-100:hover {
+  background-color: #854d0e !important;
+}
+
+.dark-mode .hover\:bg-orange-100:hover {
+  background-color: #9a3412 !important;
+}
+
+.dark-mode .hover\:bg-purple-100:hover {
+  background-color: #6b21a8 !important;
+}
+
+/* Alert boxes with borders */
+.dark-mode .border-blue-200 {
+  border-color: #1e40af !important;
+}
+
+.dark-mode .border-green-200 {
+  border-color: #166534 !important;
+}
+
+.dark-mode .border-red-200 {
+  border-color: #991b1b !important;
+}
+
+.dark-mode .border-yellow-200 {
+  border-color: #854d0e !important;
+}
+
+.dark-mode .border-orange-200 {
+  border-color: #9a3412 !important;
+}
+
+.dark-mode .border-purple-200 {
+  border-color: #6b21a8 !important;
+}
+
+/* Text colors in alerts */
+.dark-mode .text-blue-800,
+.dark-mode .text-green-800,
+.dark-mode .text-red-800,
+.dark-mode .text-yellow-800,
+.dark-mode .text-orange-800,
+.dark-mode .text-purple-800 {
+  color: white !important;
+}
+
+/* Links in colored sections */
+.dark-mode a {
+  color: #93c5fd !important;
+}
+
+.dark-mode a:hover {
+  text-decoration: underline !important;
+}

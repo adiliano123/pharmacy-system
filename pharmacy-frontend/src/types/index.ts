@@ -122,7 +122,7 @@ export interface UpdateCustomerInput {
 }
 
 // User Types
-export type UserRole = "admin" | "pharmacist" | "cashier" | "store_manager" | "auditor";
+export type UserRole = "admin" | "pharmacist" | "cashier" | "store_manager" | "auditor" | "storekeeper";
 
 export interface User {
   id: number;

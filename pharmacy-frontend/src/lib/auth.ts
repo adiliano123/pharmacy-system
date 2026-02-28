@@ -69,6 +69,19 @@ export const rolePermissions: Record<UserRole, RolePermissions> = {
     canViewSettings: false,
     canEditSettings: false,
   },
+  storekeeper: {
+    canViewInventory: true,
+    canEditInventory: true,
+    canViewSales: false,
+    canCreateSales: false,
+    canViewCustomers: false,
+    canEditCustomers: false,
+    canViewReports: true,
+    canViewCompliance: false,
+    canEditCompliance: false,
+    canViewSettings: false,
+    canEditSettings: false,
+  },
 };
 
 // Real authentication with Laravel backend

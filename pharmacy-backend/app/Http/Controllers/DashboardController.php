@@ -20,6 +20,51 @@ class DashboardController extends Controller
         $today = Carbon::today();
         $thisMonth = Carbon::now()->startOfMonth();
         
+        // Today's Sales
+        $todaySales = Sale::whereDate('created_at', $today)->sum('total_amount') ?? 0;
+        
+        // Monthly Sales
+        $monthlySales = Sale::where('created_at', '>=', $thisMonth)->sum('total_amount') ?? 0;
+        
+        // Total Products
+        $totalProducts = Product::count();
+        
+        // Low stock - products with total batch quantity below threshold
+        $lowStockItems = DB::table('products')
+            ->leftJoin('stock_batches', 'products.id', '=', 'stock_batches.product_id')
+            ->select('products.id')
+            ->groupBy('products.id')
+            ->havingRaw('COALESCE(SUM(stock_batches.quantity), 0) < 20')
+            ->count();
+        
+        // Total Customers
+        $totalCustomers = Customer::count();
+        
+        // Expiring products - batches expiring in next 30 days
+        $expiringProducts = DB::table('stock_batches')
+            ->where('expiry_date', '<=', Carbon::now()->addDays(30))
+            ->where('expiry_date', '>', Carbon::now())
+            ->distinct('product_id')
+            ->count('product_id');
+        
+        return response()->json([
+            'todaySales' => $todaySales,
+            'monthlySales' => $monthlySales,
+            'totalProducts' => $totalProducts,
+            'lowStockItems' => $lowStockItems,
+            'totalCustomers' => $totalCustomers,
+            'expiringProducts' => $expiringProducts,
+        ]);
+    }
+
+    /**
+     * Get Admin Dashboard Full Statistics (detailed)
+     */
+    public function adminStatsDetailed(Request $request)
+    {
+        $today = Carbon::today();
+        $thisMonth = Carbon::now()->startOfMonth();
+        
         // Total Sales
         $totalSales = Sale::sum('total_amount');
         $todaySales = Sale::whereDate('created_at', $today)->sum('total_amount');
@@ -249,6 +294,55 @@ class DashboardController extends Controller
                 'recent_sales' => $recentSales,
                 'hourly_sales' => $hourlySales,
             ]
+        ]);
+    }
+
+    /**
+     * Get Storekeeper Dashboard Statistics
+     */
+    public function storekeeperStats(Request $request)
+    {
+        // Total Products
+        $totalProducts = Product::count();
+        
+        // Low stock products (products with total batch quantity < 20)
+        $lowStockItems = DB::table('products')
+            ->leftJoin('stock_batches', 'products.id', '=', 'stock_batches.product_id')
+            ->select('products.id')
+            ->groupBy('products.id')
+            ->havingRaw('COALESCE(SUM(stock_batches.quantity), 0) < 20')
+            ->count();
+        
+        // Out of stock products
+        $outOfStock = DB::table('products')
+            ->leftJoin('stock_batches', 'products.id', '=', 'stock_batches.product_id')
+            ->select('products.id')
+            ->groupBy('products.id')
+            ->havingRaw('COALESCE(SUM(stock_batches.quantity), 0) = 0')
+            ->count();
+        
+        // Expiring products - batches expiring in next 30 days
+        $expiringProducts = DB::table('stock_batches')
+            ->where('expiry_date', '<=', Carbon::now()->addDays(30))
+            ->where('expiry_date', '>', Carbon::now())
+            ->distinct('product_id')
+            ->count('product_id');
+        
+        // Total stock value (using product price * batch quantity)
+        $totalStockValue = DB::table('products')
+            ->join('stock_batches', 'products.id', '=', 'stock_batches.product_id')
+            ->sum(DB::raw('products.price * stock_batches.quantity'));
+        
+        // Recent movements (last 7 days) - count of sales
+        $recentMovements = Sale::where('created_at', '>=', Carbon::now()->subDays(7))->count();
+        
+        return response()->json([
+            'totalProducts' => $totalProducts,
+            'lowStockItems' => $lowStockItems,
+            'outOfStock' => $outOfStock,
+            'expiringProducts' => $expiringProducts,
+            'totalStockValue' => $totalStockValue,
+            'recentMovements' => $recentMovements,
         ]);
     }
 }

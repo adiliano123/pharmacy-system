@@ -1,82 +1,102 @@
-"use client";
+'use client';
 
-import { FileText, TrendingUp, Package, AlertTriangle } from "lucide-react";
+import Link from 'next/link';
+import { TrendingUp, Package, AlertTriangle, DollarSign } from 'lucide-react';
 
 export default function ReportsPage() {
-  const reportTypes = [
+  const reports = [
     {
+      title: 'Sales Report',
+      description: 'View detailed sales analytics and revenue trends',
+      icon: DollarSign,
+      href: '/dashboard/reports/sales',
+      color: 'bg-green-500',
+      iconBg: 'bg-green-100',
+      iconColor: 'text-green-600',
+    },
+    {
+      title: 'Profit & Loss',
+      description: 'Analyze profit margins and financial performance',
       icon: TrendingUp,
-      title: "Sales Report",
-      description: "View sales performance and trends",
-      color: "bg-blue-500",
+      href: '/dashboard/reports/profit-loss',
+      color: 'bg-blue-500',
+      iconBg: 'bg-blue-100',
+      iconColor: 'text-blue-600',
     },
     {
+      title: 'Stock Movement',
+      description: 'Track inventory changes and stock flow',
       icon: Package,
-      title: "Inventory Report",
-      description: "Stock levels and movement analysis",
-      color: "bg-green-500",
+      href: '/dashboard/reports/stock-movement',
+      color: 'bg-purple-500',
+      iconBg: 'bg-purple-100',
+      iconColor: 'text-purple-600',
     },
     {
+      title: 'Expiry Report',
+      description: 'Monitor expired and expiring products',
       icon: AlertTriangle,
-      title: "Expiry Report",
-      description: "Products nearing expiration date",
-      color: "bg-orange-500",
-    },
-    {
-      icon: FileText,
-      title: "Financial Report",
-      description: "Profit, loss, and revenue analysis",
-      color: "bg-purple-500",
+      href: '/dashboard/reports/expiry',
+      color: 'bg-orange-500',
+      iconBg: 'bg-orange-100',
+      iconColor: 'text-orange-600',
     },
   ];
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Reports</h2>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">📊 Reports</h1>
+        <p className="text-gray-600 mt-2">Access comprehensive business reports and analytics</p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {reportTypes.map((report, index) => {
+        {reports.map((report) => {
           const Icon = report.icon;
           return (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-2xl shadow-md border hover:shadow-lg transition cursor-pointer"
+            <Link
+              key={report.href}
+              href={report.href}
+              className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-100"
             >
-              <div className="flex items-start gap-4">
-                <div className={`${report.color} p-3 rounded-lg`}>
-                  <Icon className="text-white" size={24} />
+              <div className="flex items-start space-x-4">
+                <div className={`${report.iconBg} p-3 rounded-xl`}>
+                  <Icon className={report.iconColor} size={32} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                    {report.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {report.description}
-                  </p>
-                  <button className="text-[#1C9AD6] hover:text-[#1576B0] font-medium text-sm">
-                    Generate Report →
-                  </button>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{report.title}</h3>
+                  <p className="text-gray-600 text-sm">{report.description}</p>
+                  <div className="mt-4">
+                    <span className="text-blue-600 font-medium text-sm hover:text-blue-700">
+                      View Report →
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
 
-      <div className="mt-8 bg-white p-6 rounded-2xl shadow-md">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Reports</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center py-2 border-b">
-            <span className="text-gray-700">Sales Report - January 2026</span>
-            <span className="text-gray-500 text-sm">Generated 2 days ago</span>
+      {/* Quick Stats */}
+      <div className="mt-8 bg-white rounded-2xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="p-4 bg-green-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-1">Today&apos;s Sales</p>
+            <p className="text-2xl font-bold text-green-600">TZS 0</p>
           </div>
-          <div className="flex justify-between items-center py-2 border-b">
-            <span className="text-gray-700">Inventory Report - Q4 2025</span>
-            <span className="text-gray-500 text-sm">Generated 1 week ago</span>
+          <div className="p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-1">Monthly Profit</p>
+            <p className="text-2xl font-bold text-blue-600">TZS 0</p>
           </div>
-          <div className="flex justify-between items-center py-2">
-            <span className="text-gray-700">Expiry Report - February 2026</span>
-            <span className="text-gray-500 text-sm">Generated today</span>
+          <div className="p-4 bg-purple-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-1">Stock Value</p>
+            <p className="text-2xl font-bold text-purple-600">TZS 0</p>
+          </div>
+          <div className="p-4 bg-orange-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-1">Expiring Soon</p>
+            <p className="text-2xl font-bold text-orange-600">0 Items</p>
           </div>
         </div>
       </div>

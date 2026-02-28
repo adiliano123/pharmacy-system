@@ -11,6 +11,8 @@ class Product extends Model
         'category',
         'description',
         'price',
+        'wholesale_price',
+        'minimum_order_quantity',
     ];
 
     public function stockBatches()

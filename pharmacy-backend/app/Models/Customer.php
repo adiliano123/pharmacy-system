@@ -11,6 +11,13 @@ class Customer extends Model
         'email',
         'phone',
         'address',
+        'customer_type',
+        'credit_limit',
+        'current_balance',
+        'payment_terms_days',
+        'tax_id',
+        'business_license',
+        'discount_percentage',
     ];
 
     public function sales()

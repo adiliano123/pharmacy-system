@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/auth";
-import RoleSelector from "./RoleSelector";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -104,8 +103,6 @@ export default function LoginPage() {
             </a>
           </p>
         </div>
-
-        <RoleSelector onSelectRole={(email) => setFormData({ ...formData, email, password: "password" })} />
       </div>
     </div>
   );

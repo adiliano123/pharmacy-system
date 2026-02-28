@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -15,7 +16,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,pharmacist,cashier',
+            'role' => 'required|in:admin,pharmacist,cashier,storekeeper',
         ]);
 
         $user = User::create([
@@ -26,6 +27,15 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Log activity
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'register',
+            'description' => "User {$user->name} registered as {$user->role}",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
 
         return response()->json([
             'user' => $user,
@@ -49,6 +59,15 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Log activity
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'login',
+            'description' => "User {$user->name} logged in",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
 
         return response()->json([
             'user' => $user,

@@ -123,6 +123,7 @@ export default function RegisterPage() {
             >
               <option value="cashier">Cashier</option>
               <option value="pharmacist">Pharmacist</option>
+              <option value="storekeeper">Storekeeper</option>
               <option value="admin">Administrator</option>
             </select>
           </div>

@@ -10,10 +10,20 @@ class Sale extends Model
         'customer_id',
         'user_id',
         'total_amount',
+        'sale_type',
+        'discount_amount',
+        'tax_amount',
+        'payment_status',
+        'payment_method',
+        'due_date',
+        'notes',
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'due_date' => 'date',
     ];
 
     public function customer()

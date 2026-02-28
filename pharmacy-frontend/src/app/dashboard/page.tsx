@@ -8,8 +8,8 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const redirectToDashboard = async () => {
-      const user = await auth.getCurrentUser();
+    const redirectToDashboard = () => {
+      const user = auth.getCurrentUser();
       
       if (!user) {
         router.push('/login');
@@ -26,6 +26,9 @@ export default function DashboardPage() {
           break;
         case 'cashier':
           router.push('/dashboard/cashier');
+          break;
+        case 'storekeeper':
+          router.push('/dashboard/storekeeper');
           break;
         default:
           router.push('/login');
