@@ -54,6 +54,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Customers
     Route::apiResource('customers', CustomerController::class);
+    Route::get('/customers/credit', [CustomerController::class, 'creditIndex']);
+    Route::get('/customers/credit/transactions', [CustomerController::class, 'creditTransactions']);
+    Route::post('/customers/credit/payment', [CustomerController::class, 'recordCreditPayment']);
 
     // Sales
     Route::apiResource('sales', SaleController::class);
