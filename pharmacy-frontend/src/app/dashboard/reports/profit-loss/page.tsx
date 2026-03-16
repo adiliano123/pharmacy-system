@@ -134,7 +134,7 @@ export default function ProfitLossReportPage() {
             <span className="text-gray-500 text-sm">Total Revenue</span>
           </div>
           <p className="text-2xl font-bold text-gray-800">
-            ${(report?.revenue?.total_sales || 0).toFixed(2)}
+            TZS {(report?.revenue?.total_sales || 0).toFixed(2)}
           </p>
           <p className="text-xs text-gray-600 mt-1">
             {report?.revenue?.total_transactions || 0} transactions
@@ -146,7 +146,7 @@ export default function ProfitLossReportPage() {
             <span className="text-gray-500 text-sm">Total Costs</span>
           </div>
           <p className="text-2xl font-bold text-gray-800">
-            ${(report?.costs?.total_costs || 0).toFixed(2)}
+            TZS {(report?.costs?.total_costs || 0).toFixed(2)}
           </p>
           <p className="text-xs text-gray-600 mt-1">
             COGS + Operating
@@ -158,7 +158,7 @@ export default function ProfitLossReportPage() {
             <span className="text-gray-500 text-sm">Gross Profit</span>
           </div>
           <p className="text-2xl font-bold text-gray-800">
-            ${(report?.profit?.gross_profit || 0).toFixed(2)}
+            TZS {(report?.profit?.gross_profit || 0).toFixed(2)}
           </p>
           <p className="text-xs text-gray-600 mt-1">
             {(report?.profit?.gross_margin_percentage || 0).toFixed(1)}% margin
@@ -174,7 +174,7 @@ export default function ProfitLossReportPage() {
             <span className="text-gray-500 text-sm">Net Profit</span>
           </div>
           <p className={`text-2xl font-bold ${isProfit ? 'text-green-600' : 'text-red-600'}`}>
-            ${(report?.profit?.net_profit || 0).toFixed(2)}
+            TZS {(report?.profit?.net_profit || 0).toFixed(2)}
           </p>
           <p className="text-xs text-gray-600 mt-1">
             {(report?.profit?.net_margin_percentage || 0).toFixed(1)}% margin
@@ -189,13 +189,13 @@ export default function ProfitLossReportPage() {
             <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
               <span className="text-gray-700">Total Sales</span>
               <span className="font-semibold text-green-600">
-                ${(report?.revenue?.total_sales || 0).toFixed(2)}
+                TZS {(report?.revenue?.total_sales || 0).toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Average Transaction</span>
               <span className="font-semibold text-gray-800">
-                ${(report?.revenue?.average_transaction || 0).toFixed(2)}
+                TZS {(report?.revenue?.average_transaction || 0).toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
@@ -213,19 +213,19 @@ export default function ProfitLossReportPage() {
             <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
               <span className="text-gray-700">Cost of Goods Sold</span>
               <span className="font-semibold text-red-600">
-                ${(report?.costs?.cost_of_goods_sold || 0).toFixed(2)}
+                TZS {(report?.costs?.cost_of_goods_sold || 0).toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Operating Expenses</span>
               <span className="font-semibold text-gray-800">
-                ${(report?.costs?.operating_expenses || 0).toFixed(2)}
+                TZS {(report?.costs?.operating_expenses || 0).toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Total Costs</span>
               <span className="font-semibold text-gray-800">
-                ${(report?.costs?.total_costs || 0).toFixed(2)}
+                TZS {(report?.costs?.total_costs || 0).toFixed(2)}
               </span>
             </div>
           </div>
@@ -250,12 +250,12 @@ export default function ProfitLossReportPage() {
                 {report.breakdown.by_category.map((item, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm font-medium text-gray-800">{item.category}</td>
-                    <td className="px-4 py-3 text-sm text-right text-gray-800">${Number(item.revenue).toFixed(2)}</td>
-                    <td className="px-4 py-3 text-sm text-right text-gray-600">${Number(item.cost).toFixed(2)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-800">TZS {Number(item.revenue).toFixed(2)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-600">TZS {Number(item.cost).toFixed(2)}</td>
                     <td className={`px-4 py-3 text-sm text-right font-semibold ${
                       Number(item.profit) >= 0 ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      ${Number(item.profit).toFixed(2)}
+                      TZS {Number(item.profit).toFixed(2)}
                     </td>
                     <td className="px-4 py-3 text-sm text-right text-gray-800">{Number(item.margin).toFixed(1)}%</td>
                   </tr>

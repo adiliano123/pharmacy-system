@@ -221,15 +221,21 @@ export default function AdminDashboard() {
           {/* Pie Chart Representation */}
           <div className="mt-8 flex justify-center">
             <div className="relative w-48 h-48">
-              <svg viewBox="0 0 100 100" className="transform -rotate-90">
+              <svg viewBox="0 0 100 100" className="transform -rotate-90 pie-chart" style={{overflow: 'visible'}}>
                 <circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" strokeWidth="20" strokeDasharray="163 251" />
                 <circle cx="50" cy="50" r="40" fill="none" stroke="#eab308" strokeWidth="20" strokeDasharray="63 251" strokeDashoffset="-163" />
                 <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" strokeWidth="20" strokeDasharray="25 251" strokeDashoffset="-226" />
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <ShoppingCart className="text-gray-400" size={32} />
+              <div className="absolute inset-0 flex items-center justify-center pie-chart-center">
+                <ShoppingCart className="text-gray-400 pie-chart-icon" size={32} />
               </div>
             </div>
+          </div>
+          {/* Legend */}
+          <div className="mt-4 flex justify-center gap-6 text-sm">
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor:'#10b981'}}></span>In Stock</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor:'#eab308'}}></span>Low</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor:'#ef4444'}}></span>Critical</span>
           </div>
         </div>
       </div>
@@ -241,12 +247,12 @@ export default function AdminDashboard() {
           {profitData.map((item) => (
             <div key={item.label} className="text-center">
               <div className="mb-4">
-                <div className="w-32 h-32 mx-auto rounded-full border-8 border-gray-200 flex items-center justify-center relative">
-                  <div className={`absolute inset-0 rounded-full ${item.color} opacity-20`}></div>
+                <div className={`w-32 h-32 mx-auto rounded-full border-8 ${item.color} border-opacity-30 flex items-center justify-center relative`}>
+                  <div className={`absolute inset-0 rounded-full ${item.color} opacity-10`}></div>
                   <span className="text-3xl font-bold text-gray-900 relative z-10">{item.value}%</span>
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">{item.label}</h3>
+              <h3 className={`text-lg font-semibold ${item.color.replace('bg-', 'text-')}`}>{item.label}</h3>
               <p className="text-sm text-gray-600 mt-1">TZS {(item.value * 10000).toLocaleString()}</p>
             </div>
           ))}

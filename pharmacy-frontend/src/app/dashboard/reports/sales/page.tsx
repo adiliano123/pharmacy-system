@@ -125,7 +125,7 @@ export default function SalesReportPage() {
             <span className="text-gray-500 text-sm">Total Sales</span>
           </div>
           <p className="text-2xl font-bold text-gray-800">
-            ${(report?.summary?.total_sales || 0).toFixed(2)}
+            TZS {(report?.summary?.total_sales || 0).toFixed(2)}
           </p>
         </div>
         <div className="bg-white p-4 rounded-2xl shadow-md border">
@@ -143,7 +143,7 @@ export default function SalesReportPage() {
             <span className="text-gray-500 text-sm">Avg Transaction</span>
           </div>
           <p className="text-2xl font-bold text-gray-800">
-            ${(report?.summary?.average_transaction || 0).toFixed(2)}
+            TZS {(report?.summary?.average_transaction || 0).toFixed(2)}
           </p>
         </div>
         <div className="bg-white p-4 rounded-2xl shadow-md border">
@@ -174,7 +174,7 @@ export default function SalesReportPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-800">${product.revenue.toFixed(2)}</p>
+                    <p className="font-semibold text-gray-800">TZS {product.revenue.toFixed(2)}</p>
                     <p className="text-xs text-gray-600">{product.transactions} sales</p>
                   </div>
                 </div>
@@ -193,7 +193,7 @@ export default function SalesReportPage() {
                 <div key={index}>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium text-gray-700 capitalize">{method.method}</span>
-                    <span className="text-sm font-semibold text-gray-800">${method.total.toFixed(2)}</span>
+                    <span className="text-sm font-semibold text-gray-800">TZS {method.total.toFixed(2)}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -239,13 +239,13 @@ export default function SalesReportPage() {
                       })}
                     </td>
                     <td className="px-4 py-3 text-sm text-right font-semibold text-gray-800">
-                      ${day.sales.toFixed(2)}
+                      TZS {day.sales.toFixed(2)}
                     </td>
                     <td className="px-4 py-3 text-sm text-right text-gray-600">
                       {day.transactions}
                     </td>
                     <td className="px-4 py-3 text-sm text-right text-gray-600">
-                      ${(day.sales / day.transactions).toFixed(2)}
+                      TZS {(day.sales / day.transactions).toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -264,7 +264,7 @@ export default function SalesReportPage() {
                 <p className="text-xs text-gray-600 mb-1">
                   {hour.hour}:00 - {hour.hour + 1}:00
                 </p>
-                <p className="text-sm font-semibold text-gray-800">${hour.sales.toFixed(0)}</p>
+                <p className="text-sm font-semibold text-gray-800">TZS {hour.sales.toFixed(0)}</p>
                 <p className="text-xs text-gray-600">{hour.transactions} sales</p>
               </div>
             ))}

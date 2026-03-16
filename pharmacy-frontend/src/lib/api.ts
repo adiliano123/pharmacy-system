@@ -177,6 +177,10 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(data),
       }),
+    googleAuth: (token: string) => api.fetch('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    }),
     logout: () => api.fetch('/logout', { method: 'POST' }),
     me: () => api.fetch('/me'),
   },

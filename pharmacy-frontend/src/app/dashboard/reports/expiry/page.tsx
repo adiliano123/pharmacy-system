@@ -124,7 +124,7 @@ export default function ExpiryReportPage() {
             <span className="text-gray-500 text-sm">Expired Value</span>
           </div>
           <p className="text-2xl font-bold text-red-600">
-            ${(report?.summary?.total_expired_value || 0).toFixed(2)}
+            TZS {(report?.summary?.total_expired_value || 0).toFixed(2)}
           </p>
         </div>
         <div className="bg-white p-4 rounded-2xl shadow-md border border-orange-200">
@@ -133,7 +133,7 @@ export default function ExpiryReportPage() {
             <span className="text-gray-500 text-sm">Expiring Value</span>
           </div>
           <p className="text-2xl font-bold text-orange-600">
-            ${(report?.summary?.total_expiring_value || 0).toFixed(2)}
+            TZS {(report?.summary?.total_expiring_value || 0).toFixed(2)}
           </p>
         </div>
         <div className="bg-white p-4 rounded-2xl shadow-md border border-gray-200">
@@ -171,7 +171,7 @@ export default function ExpiryReportPage() {
                     <td className="px-4 py-3 text-sm text-gray-600">{item.batch_number}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.quantity}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{formatDate(item.expiry_date)}</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-red-600">${item.cost_value.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-red-600">TZS {item.cost_value.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -91,7 +91,6 @@ export const auth = {
       const response = await api.auth.login(email, password);
       
       if (response.token && response.user) {
-        // Store token and user
         if (typeof window !== "undefined") {
           localStorage.setItem("auth_token", response.token);
           localStorage.setItem("user", JSON.stringify(response.user));
@@ -101,6 +100,23 @@ export const auth = {
       return null;
     } catch (error) {
       console.error("Login error:", error);
+      return null;
+    }
+  },
+
+  loginWithGoogle: async (googleToken: string): Promise<User | null> => {
+    try {
+      const response = await api.auth.googleAuth(googleToken);
+      if (response.token && response.user) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("auth_token", response.token);
+          localStorage.setItem("user", JSON.stringify(response.user));
+        }
+        return response.user;
+      }
+      return null;
+    } catch (error) {
+      console.error("Google login error:", error);
       return null;
     }
   },

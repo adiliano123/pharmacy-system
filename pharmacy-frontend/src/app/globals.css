@@ -25,6 +25,59 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Custom Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.8s ease-out;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Gradient Backgrounds */
+.bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.bg-gradient-to-b {
+  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+}
+
 /* Dark Mode Styles */
 .dark-mode {
   background-color: #1a1a1a !important;
@@ -59,8 +112,16 @@ body {
 }
 
 .dark-mode input::placeholder,
-.dark-mode textarea::placeholder {
-  color: #999 !important;
+.dark-mode textarea::placeholder,
+.dark-mode select::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* Tailwind v3 placeholder: variant */
+.dark-mode input,
+.dark-mode textarea {
+  color: #f3f4f6 !important;
 }
 
 .dark-mode input:focus,
@@ -246,13 +307,15 @@ body {
   border-color: #404040 !important;
 }
 
-/* Dropdown Menus */
-.dark-mode .absolute {
+/* Dropdown Menus – scope to actual dropdown containers only */
+.dark-mode [role="menu"],
+.dark-mode [role="listbox"],
+.dark-mode .dropdown-menu {
   background-color: #2d2d2d !important;
 }
 
-/* Icons and Emojis - Keep visible */
-.dark-mode svg {
+/* Icons and Emojis - Keep visible, but don't override explicitly colored icons */
+.dark-mode svg:not([class*="text-"]) {
   color: white !important;
 }
 
@@ -318,13 +381,13 @@ body {
   background-color: #581c87 !important;
 }
 
-/* Ensure text in colored backgrounds is white */
-.dark-mode .bg-blue-50 *,
-.dark-mode .bg-green-50 *,
-.dark-mode .bg-red-50 *,
-.dark-mode .bg-yellow-50 *,
-.dark-mode .bg-orange-50 *,
-.dark-mode .bg-purple-50 * {
+/* Ensure text in colored backgrounds is white, but preserve explicit icon colors */
+.dark-mode .bg-blue-50 *:not(svg[class*="text-"]),
+.dark-mode .bg-green-50 *:not(svg[class*="text-"]),
+.dark-mode .bg-red-50 *:not(svg[class*="text-"]),
+.dark-mode .bg-yellow-50 *:not(svg[class*="text-"]),
+.dark-mode .bg-orange-50 *:not(svg[class*="text-"]),
+.dark-mode .bg-purple-50 *:not(svg[class*="text-"]) {
   color: white !important;
 }
 
@@ -388,11 +451,266 @@ body {
   color: white !important;
 }
 
-/* Links in colored sections */
-.dark-mode a {
+/* Links in colored sections – only plain text links, not button-styled ones */
+.dark-mode a:not([class*="bg-"]):not([class*="px-"]) {
   color: #93c5fd !important;
 }
 
-.dark-mode a:hover {
+.dark-mode a:not([class*="bg-"]):not([class*="px-"]):hover {
   text-decoration: underline !important;
+}
+
+/* ── Landing Page Hero – Dark Mode ── */
+
+/* Hero section gradient background */
+.dark-mode .from-green-50,
+.dark-mode .via-teal-50,
+.dark-mode .to-blue-50,
+.dark-mode .bg-teal-50 {
+  background-color: #1a1a1a !important;
+}
+
+/* Override the whole hero section gradient */
+.dark-mode section.relative.overflow-hidden {
+  background: #1f2937 !important;
+}
+
+/* Hero card – the white card on the right */
+.dark-mode .rounded-3xl.bg-white,
+.dark-mode .bg-white.rounded-3xl {
+  background-color: #2d2d2d !important;
+}
+
+/* Hero card stat tiles – use neutral dark instead of deep color */
+.dark-mode .bg-green-50.rounded-2xl,
+.dark-mode .bg-blue-50.rounded-2xl,
+.dark-mode .bg-purple-50.rounded-2xl,
+.dark-mode .bg-orange-50.rounded-2xl,
+.dark-mode .bg-teal-50.rounded-2xl,
+.dark-mode .bg-red-50.rounded-2xl {
+  background-color: #374151 !important;
+}
+
+/* Keep icon colors inside the stat tiles visible */
+.dark-mode .bg-green-50.rounded-2xl svg,
+.dark-mode .bg-blue-50.rounded-2xl svg,
+.dark-mode .bg-purple-50.rounded-2xl svg,
+.dark-mode .bg-orange-50.rounded-2xl svg,
+.dark-mode .bg-teal-50.rounded-2xl svg,
+.dark-mode .bg-red-50.rounded-2xl svg {
+  color: inherit !important;
+}
+
+/* Hero badge pill */
+.dark-mode .bg-green-100.text-green-700 {
+  background-color: #14532d !important;
+  color: #86efac !important;
+}
+
+/* "Sign In" button border in hero */
+.dark-mode .border-gray-200.bg-white {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #f9fafb !important;
+}
+
+/* Feature badges below hero CTA buttons */
+.dark-mode .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+/* Why Choose Us section background */
+.dark-mode .from-green-50.to-teal-50,
+.dark-mode section.bg-linear-to-br.from-green-50 {
+  background: #1f2937 !important;
+}
+
+/* Testimonial cards */
+.dark-mode .bg-gray-50.rounded-2xl {
+  background-color: #374151 !important;
+}
+
+/* FAQ cards */
+.dark-mode .bg-white.rounded-2xl.overflow-hidden {
+  background-color: #2d2d2d !important;
+}
+
+/* Category cards */
+.dark-mode .bg-blue-50.rounded-2xl,
+.dark-mode .bg-green-50.rounded-2xl,
+.dark-mode .bg-purple-50.rounded-2xl,
+.dark-mode .bg-red-50.rounded-2xl,
+.dark-mode .bg-orange-50.rounded-2xl,
+.dark-mode .bg-teal-50.rounded-2xl {
+  background-color: #374151 !important;
+}
+
+/* Product cards */
+.dark-mode .bg-white.border.border-gray-100.rounded-2xl {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+}
+
+/* Product icon tile */
+.dark-mode .bg-gray-50.rounded-2xl {
+  background-color: #374151 !important;
+}
+
+/* Why Choose Us feature cards */
+.dark-mode .bg-white.rounded-2xl.shadow-sm {
+  background-color: #2d2d2d !important;
+}
+
+/* Keep colored icon backgrounds in Why Choose Us */
+.dark-mode .bg-green-100.rounded-2xl,
+.dark-mode .bg-blue-100.rounded-2xl,
+.dark-mode .bg-purple-100.rounded-2xl,
+.dark-mode .bg-orange-100.rounded-2xl {
+  background-color: #374151 !important;
+}
+
+/* ── Profit Distribution – Dark Mode ── */
+
+/* Make the colored ring borders fully visible in dark mode */
+.dark-mode .border-blue-500 {
+  border-color: #3b82f6 !important;
+  opacity: 1 !important;
+}
+
+.dark-mode .border-orange-500 {
+  border-color: #f97316 !important;
+  opacity: 1 !important;
+}
+
+.dark-mode .border-green-500 {
+  border-color: #22c55e !important;
+  opacity: 1 !important;
+}
+
+/* Profit Distribution label text colors in dark mode */
+.dark-mode .text-blue-500 {
+  color: #60a5fa !important;
+}
+
+.dark-mode .text-orange-500 {
+  color: #fb923c !important;
+}
+
+.dark-mode .text-green-500 {
+  color: #4ade80 !important;
+}
+
+/* Inner glow overlay stays subtle */
+.dark-mode .bg-blue-500.opacity-10,
+.dark-mode .bg-orange-500.opacity-10,
+.dark-mode .bg-green-500.opacity-10 {
+  opacity: 0.15 !important;
+}
+
+/* ── Pie Chart – Dark Mode ── */
+
+/* Prevent the blanket svg rule from wiping out stroke colors */
+.dark-mode svg.pie-chart circle {
+  color: unset !important;
+}
+
+/* Keep the strokes at their original colors in dark mode */
+.dark-mode svg.pie-chart circle:nth-child(1) { stroke: #10b981 !important; }
+.dark-mode svg.pie-chart circle:nth-child(2) { stroke: #eab308 !important; }
+.dark-mode svg.pie-chart circle:nth-child(3) { stroke: #ef4444 !important; }
+
+/* Center icon – use a lighter gray so it's visible on dark card */
+.dark-mode .pie-chart-icon {
+  color: #9ca3af !important;
+}
+
+/* Legend dots – keep their colors */
+.dark-mode .bg-emerald-500 { background-color: #10b981 !important; }
+.dark-mode .bg-yellow-500  { background-color: #eab308 !important; }
+.dark-mode .bg-red-500     { background-color: #ef4444 !important; }
+
+/* Ensure SVG itself has no color override */
+.dark-mode svg.pie-chart {
+  color: unset !important;
+}
+
+/* ── Global text visibility fix ── */
+/* Any gray text that wasn't caught by the blanket rule */
+.dark-mode .text-gray-900,
+.dark-mode .text-gray-800,
+.dark-mode .text-gray-700 {
+  color: #f3f4f6 !important;
+}
+
+.dark-mode .text-gray-600,
+.dark-mode .text-gray-500 {
+  color: #d1d5db !important;
+}
+
+.dark-mode .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+/* Ensure bg-gray-50 rows/sections don't hide text */
+.dark-mode .bg-gray-50 {
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+
+.dark-mode .bg-gray-50 * {
+  color: #f3f4f6 !important;
+}
+
+/* Progress bar track */
+.dark-mode .bg-gray-200 {
+  background-color: #374151 !important;
+}
+
+/* Table rows */
+.dark-mode tr,
+.dark-mode td,
+.dark-mode th {
+  color: #f3f4f6 !important;
+  border-color: #374151 !important;
+}
+
+/* Any remaining white-background containers */
+.dark-mode .bg-white {
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+
+/* ── Placeholder visibility – all inputs system-wide ── */
+
+/* Catch Tailwind's placeholder: variant syntax */
+.dark-mode .placeholder\:text-gray-400::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* Catch legacy placeholder-gray-400 class */
+.dark-mode .placeholder-gray-400::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* Date inputs – browser-native placeholder text */
+.dark-mode input[type="date"]::-webkit-datetime-edit,
+.dark-mode input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+.dark-mode input[type="date"]::-webkit-datetime-edit-text,
+.dark-mode input[type="date"]::-webkit-datetime-edit-month-field,
+.dark-mode input[type="date"]::-webkit-datetime-edit-day-field,
+.dark-mode input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #f3f4f6 !important;
+}
+
+/* Search inputs */
+.dark-mode input[type="search"]::placeholder,
+.dark-mode input[type="text"]::placeholder,
+.dark-mode input[type="email"]::placeholder,
+.dark-mode input[type="password"]::placeholder,
+.dark-mode input[type="number"]::placeholder,
+.dark-mode input[type="tel"]::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
 }
