@@ -14,6 +14,8 @@ interface AuditLog {
   metadata?: Record<string, unknown>;
 }
 
+import { exportToPDF, exportToCSV } from '@/lib/pdf';
+
 export default function AuditTrailPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,10 +84,45 @@ export default function AuditTrailPage() {
           <h2 className="text-2xl font-bold text-gray-800">Audit Trail</h2>
           <p className="text-gray-600 text-sm">Complete history of system activities</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Download size={18} />
-          Export
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => exportToPDF({
+              title: 'Audit Trail',
+              subtitle: 'System activity log',
+              columns: [
+                { header: 'Timestamp', key: 'created_at' },
+                { header: 'Action', key: 'action' },
+                { header: 'Description', key: 'description' },
+                { header: 'User', key: 'user_name' },
+                { header: 'Role', key: 'user_role' },
+              ],
+              data: filteredLogs.map(l => ({ ...l, created_at: formatDate(l.created_at) })),
+              filename: 'audit-trail',
+            })}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Download size={18} />
+            PDF
+          </button>
+          <button
+            onClick={() => exportToCSV({
+              title: 'Audit Trail',
+              columns: [
+                { header: 'Timestamp', key: 'created_at' },
+                { header: 'Action', key: 'action' },
+                { header: 'Description', key: 'description' },
+                { header: 'User', key: 'user_name' },
+                { header: 'Role', key: 'user_role' },
+              ],
+              data: filteredLogs.map(l => ({ ...l, created_at: formatDate(l.created_at) })),
+              filename: 'audit-trail',
+            })}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <Download size={18} />
+            CSV
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-md p-6 mb-6">

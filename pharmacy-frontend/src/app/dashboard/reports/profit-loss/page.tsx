@@ -42,6 +42,8 @@ interface ProfitLossReport {
   };
 }
 
+import { exportToPDF, exportToCSV } from '@/lib/pdf';
+
 export default function ProfitLossReportPage() {
   const [report, setReport] = useState<ProfitLossReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,7 +71,58 @@ export default function ProfitLossReportPage() {
   }, [dateRange]);
 
   const exportReport = () => {
-    alert('Export functionality would generate PDF/Excel report');
+    if (!report) return;
+    const data = report.breakdown.by_category.length > 0
+      ? report.breakdown.by_category.map(item => ({
+          category: item.category,
+          revenue: 'TZS ' + Number(item.revenue).toFixed(2),
+          cost: 'TZS ' + Number(item.cost).toFixed(2),
+          profit: 'TZS ' + Number(item.profit).toFixed(2),
+          margin: Number(item.margin).toFixed(1) + '%',
+        }))
+      : [{
+          category: 'Summary',
+          revenue: 'TZS ' + report.revenue.total_sales.toFixed(2),
+          cost: 'TZS ' + report.costs.total_costs.toFixed(2),
+          profit: 'TZS ' + report.profit.net_profit.toFixed(2),
+          margin: report.profit.net_margin_percentage.toFixed(1) + '%',
+        }];
+
+    exportToPDF({
+      title: 'Profit & Loss Report',
+      subtitle: 'Period: ' + dateRange.from + ' to ' + dateRange.to,
+      columns: [
+        { header: 'Category', key: 'category' },
+        { header: 'Revenue', key: 'revenue' },
+        { header: 'Cost', key: 'cost' },
+        { header: 'Profit', key: 'profit' },
+        { header: 'Margin', key: 'margin' },
+      ],
+      data,
+      filename: 'profit-loss-report',
+    });
+  };
+
+  const exportCSV = () => {
+    if (!report) return;
+    exportToCSV({
+      title: 'Profit & Loss Report',
+      columns: [
+        { header: 'Category', key: 'category' },
+        { header: 'Revenue', key: 'revenue' },
+        { header: 'Cost', key: 'cost' },
+        { header: 'Profit', key: 'profit' },
+        { header: 'Margin', key: 'margin' },
+      ],
+      data: report.breakdown.by_category.map(item => ({
+        category: item.category,
+        revenue: Number(item.revenue).toFixed(2),
+        cost: Number(item.cost).toFixed(2),
+        profit: Number(item.profit).toFixed(2),
+        margin: Number(item.margin).toFixed(1) + '%',
+      })),
+      filename: 'profit-loss-report',
+    });
   };
 
   if (loading) {
@@ -100,7 +153,14 @@ export default function ProfitLossReportPage() {
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Download size={18} />
-          Export Report
+          PDF
+        </button>
+        <button
+          onClick={exportCSV}
+          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
+          <Download size={18} />
+          CSV
         </button>
       </div>
 

@@ -35,6 +35,8 @@ interface SalesReport {
   }>;
 }
 
+import { exportToPDF, exportToCSV } from '@/lib/pdf';
+
 export default function SalesReportPage() {
   const [report, setReport] = useState<SalesReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,7 +64,39 @@ export default function SalesReportPage() {
   }, [dateRange]);
 
   const exportReport = () => {
-    alert('Export functionality would generate PDF/Excel report');
+    if (!report) return;
+    exportToPDF({
+      title: 'Sales Report',
+      subtitle: 'Period: ' + dateRange.from + ' to ' + dateRange.to,
+      columns: [
+        { header: 'Product', key: 'product_name' },
+        { header: 'Units Sold', key: 'quantity_sold' },
+        { header: 'Revenue (TZS)', key: 'revenue' },
+        { header: 'Transactions', key: 'transactions' },
+      ],
+      data: (report.top_products || []).map(p => ({
+        ...p,
+        revenue: p.revenue.toFixed(2),
+      })),
+      filename: 'sales-report',
+    });
+  };
+
+  const exportCSV = () => {
+    if (!report) return;
+    exportToCSV({
+      title: 'Sales Report',
+      columns: [
+        { header: 'Date', key: 'date' },
+        { header: 'Sales (TZS)', key: 'sales' },
+        { header: 'Transactions', key: 'transactions' },
+      ],
+      data: (report.daily_sales || []).map(d => ({
+        ...d,
+        sales: d.sales.toFixed(2),
+      })),
+      filename: 'sales-report',
+    });
   };
 
   if (loading) {
@@ -91,7 +125,14 @@ export default function SalesReportPage() {
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Download size={18} />
-          Export Report
+          PDF
+        </button>
+        <button
+          onClick={exportCSV}
+          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
+          <Download size={18} />
+          CSV
         </button>
       </div>
 
