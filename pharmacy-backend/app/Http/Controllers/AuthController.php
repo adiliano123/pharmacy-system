@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 
 class AuthController extends Controller
 {
@@ -19,7 +20,9 @@ class AuthController extends Controller
         $request->validate(['token' => 'required|string']);
 
         try {
-            $googleUser = Socialite::driver('google')->stateless()->userFromToken($request->token);
+            /** @var AbstractProvider $googleProvider */
+            $googleProvider = Socialite::driver('google');
+            $googleUser = $googleProvider->stateless()->userFromToken($request->token);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Invalid Google token'], 401);
         }

@@ -13,7 +13,14 @@ import type {
   RegisterInput,
 } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ||
+  'http://localhost:8000/api';
+
+const getApiUrl = (endpoint: string) => {
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+  return `${API_BASE_URL}/${normalizedEndpoint}`;
+};
 
 // Create axios instance
 const axiosInstance = axios.create({
@@ -56,7 +63,9 @@ export const api = {
     const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
     
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const url = getApiUrl(endpoint);
+      const response = await fetch(url, {
+        credentials: 'include',
         ...options,
         headers: {
           'Content-Type': 'application/json',

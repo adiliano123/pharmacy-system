@@ -1,5 +1,5 @@
 // General utility functions
-export function cn(...classes: string[]) {
+export function cn(...classes: Array<string | undefined | null | false>) {
   return classes.filter(Boolean).join(' ');
 }
 

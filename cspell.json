@@ -1,0 +1,34 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "Laravel",
+    "Medi",
+    "postmessage",
+    "Sanctum",
+    "artisan",
+    "middleware",
+    "eloquent",
+    "livewire",
+    "tinker",
+    "phpunit",
+    "tailwindcss",
+    "nextjs",
+    "axios",
+    "bcrypt",
+    "seeder",
+    "seeders",
+    "fillable",
+    "nullable",
+    "autoincrement",
+    "varchar"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "vendor",
+    "*.lock",
+    "*.log",
+    "dist",
+    ".git"
+  ]
+}

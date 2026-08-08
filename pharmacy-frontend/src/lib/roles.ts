@@ -7,6 +7,7 @@ export const roleDescriptions: Record<UserRole, string> = {
   cashier: "Process sales and view inventory",
   store_manager: "Manage store operations and view reports",
   auditor: "View and audit compliance records",
+  storekeeper: "Manage stock and inventory records",
 };
 
 // Role hierarchy (higher number = more privileges)
@@ -16,6 +17,7 @@ export const roleHierarchy: Record<UserRole, number> = {
   pharmacist: 3,
   auditor: 2,
   cashier: 1,
+  storekeeper: 1,
 };
 
 export function hasHigherRole(userRole: UserRole, requiredRole: UserRole): boolean {

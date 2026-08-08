@@ -19,13 +19,14 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+'allowed_origins' => [
+    env('FRONTEND_URL', 'http://localhost:3000'),
+    'http://127.0.0.1:3000',
+],
 
-    'allowed_origins_patterns' => [],
-
-    'allowed_headers' => ['*'],
-
-    'exposed_headers' => [],
+'allowed_origins_patterns' => [
+    '/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/',
+],
 
     'max_age' => 0,
 
