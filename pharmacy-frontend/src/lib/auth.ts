@@ -84,6 +84,19 @@ export const rolePermissions: Record<UserRole, RolePermissions> = {
   },
 };
 
+// Helpers to sync the token into a cookie so Next.js middleware can read it
+const TOKEN_COOKIE = "auth_token";
+
+function setTokenCookie(token: string) {
+  // Expires in 7 days; SameSite=Lax is safe for same-origin API calls
+  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
+  document.cookie = `${TOKEN_COOKIE}=${token}; path=/; expires=${expires}; SameSite=Lax`;
+}
+
+function clearTokenCookie() {
+  document.cookie = `${TOKEN_COOKIE}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+}
+
 // Real authentication with Laravel backend
 export const auth = {
   login: async (email: string, password: string): Promise<User | null> => {
@@ -94,6 +107,7 @@ export const auth = {
         if (typeof window !== "undefined") {
           localStorage.setItem("auth_token", response.token);
           localStorage.setItem("user", JSON.stringify(response.user));
+          setTokenCookie(response.token);
         }
         return response.user;
       }
@@ -111,6 +125,7 @@ export const auth = {
         if (typeof window !== "undefined") {
           localStorage.setItem("auth_token", response.token);
           localStorage.setItem("user", JSON.stringify(response.user));
+          setTokenCookie(response.token);
         }
         return response.user;
       }
@@ -127,10 +142,11 @@ export const auth = {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Clear session/tokens
+      // Clear session/tokens from both localStorage and cookie
       if (typeof window !== "undefined") {
         localStorage.removeItem("auth_token");
         localStorage.removeItem("user");
+        clearTokenCookie();
       }
     }
   },

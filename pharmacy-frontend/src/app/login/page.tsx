@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
@@ -12,11 +12,13 @@ function GoogleSignInButton({
   loading,
   setLoading,
   router,
+  redirectTo,
 }: {
   setError: (message: string) => void;
   loading: boolean;
   setLoading: (value: boolean) => void;
   router: ReturnType<typeof useRouter>;
+  redirectTo: string;
 }) {
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -25,7 +27,7 @@ function GoogleSignInButton({
       try {
         const user = await auth.loginWithGoogle(tokenResponse.access_token);
         if (user) {
-          router.push("/dashboard");
+          router.push(redirectTo);
         } else {
           setError("Google sign-in failed. Please try again.");
         }
@@ -58,6 +60,8 @@ function GoogleSignInButton({
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -71,9 +75,9 @@ export default function LoginPage() {
   useEffect(() => {
     // Check if user is already logged in
     if (auth.isAuthenticated()) {
-      router.push("/dashboard");
+      router.push(redirectTo);
     }
-  }, [router]);
+  }, [router, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +87,7 @@ export default function LoginPage() {
     try {
       const user = await auth.login(formData.email, formData.password);
       if (user) {
-        router.push("/dashboard");
+        router.push(redirectTo);
       } else {
         setError("Invalid email or password");
       }
@@ -230,6 +234,7 @@ export default function LoginPage() {
                 loading={loading}
                 setLoading={setLoading}
                 router={router}
+                redirectTo={redirectTo}
               />
             ) : (
               <button

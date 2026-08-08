@@ -1,28 +1,42 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Routes that don't require authentication
+const PUBLIC_ROUTES = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/',
+];
+
+// Routes that authenticated users should not access (e.g. login/register)
+const AUTH_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password'];
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/'];
+  const token = request.cookies.get('auth_token')?.value;
 
-  // Check if the route is public
-  if (publicRoutes.includes(pathname)) {
-    return NextResponse.next();
+  const isPublicRoute = PUBLIC_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  );
+
+  const isAuthRoute = AUTH_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  );
+
+  // Authenticated user trying to access login/register → send to dashboard
+  if (token && isAuthRoute) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // Protected routes - check authentication
-  if (pathname.startsWith('/dashboard')) {
-    // Check for auth token in cookies or localStorage (client-side)
-    const token = request.cookies.get('auth_token');
-    
-    // Note: localStorage check happens client-side in components
-    // This middleware only checks cookies for SSR
-    if (!token) {
-      // Allow through - client-side will handle redirect if no localStorage token
-      return NextResponse.next();
-    }
+  // Unauthenticated user trying to access a protected route → send to login
+  if (!token && !isPublicRoute) {
+    const loginUrl = new URL('/login', request.url);
+    // Preserve the original destination so we can redirect back after login
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
@@ -30,6 +44,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    // Run on all routes except Next.js internals and static files
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.svg|.*\\.ico).*)',
   ],
 };
