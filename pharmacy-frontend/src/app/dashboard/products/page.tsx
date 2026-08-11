@@ -165,8 +165,10 @@ export default function ProductsPage() {
                       {product.category}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-right font-semibold">
-                    TZS {product.price?.toLocaleString()}
+                  <td className="py-3 px-4 text-right">
+                    <span className="font-bold text-green-700">
+                      TZS {product.price?.toLocaleString()}
+                    </span>
                   </td>
                   <td className="py-3 px-4 text-right">
                     <span className={`font-semibold ${
@@ -179,19 +181,22 @@ export default function ProductsPage() {
                   </td>
                   <td className="py-3 px-4 text-center">
                     <div className="flex flex-col gap-1 items-center">
-                      {product.is_out_of_stock && (
-                        <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-semibold">
+                      {product.is_out_of_stock ? (
+                        <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
                           Out of Stock
                         </span>
-                      )}
-                      {product.is_low_stock && !product.is_out_of_stock && (
-                        <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-semibold">
+                      ) : product.is_low_stock ? (
+                        <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-semibold">
                           Low Stock
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                          In Stock
                         </span>
                       )}
                       {product.has_expiring_batches && (
-                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">
-                          Expiring Soon
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                          ⚠️ Expiring Soon
                         </span>
                       )}
                     </div>

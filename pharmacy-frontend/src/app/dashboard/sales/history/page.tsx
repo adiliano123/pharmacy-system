@@ -95,7 +95,7 @@ export default function SalesHistoryPage() {
                 placeholder="Invoice, customer..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder:text-gray-400"
               />
             </div>
           </div>
@@ -148,8 +148,17 @@ export default function SalesHistoryPage() {
                     <td className="px-6 py-4 text-sm font-medium text-blue-600">
                       {sale.invoice_number}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-800">
-                      {sale.customer_name || 'Walk-in Customer'}
+                    <td className="px-6 py-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs shrink-0">
+                          {(sale.customer_name || 'W')[0].toUpperCase()}
+                        </div>
+                        <span className="font-medium text-gray-900">
+                          {sale.customer_name || (
+                            <span className="text-gray-500 italic">Walk-in</span>
+                          )}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {formatDate(sale.created_at)}

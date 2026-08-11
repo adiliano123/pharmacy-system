@@ -100,16 +100,22 @@ class ComplianceController extends Controller
 
     public function controlledDrugs()
     {
-        // Get products that are controlled substances
-        // For now, we'll filter by category or add a flag
-        $controlledDrugs = \App\Models\Product::with(['stock_batches' => function ($query) {
+        // Products flagged as controlled substances OR matching known controlled categories/names
+        $controlledDrugs = \App\Models\Product::with(['stockBatches' => function ($query) {
             $query->where('quantity', '>', 0);
         }])
-        ->whereIn('category', ['Controlled Substances', 'Narcotics', 'Psychotropics'])
-        ->orWhere('name', 'like', '%morphine%')
-        ->orWhere('name', 'like', '%codeine%')
-        ->orWhere('name', 'like', '%tramadol%')
-        ->get();
+        ->where(function ($q) {
+            $q->where('is_controlled', true)
+              ->orWhereIn('category', ['Controlled Substances', 'Narcotics', 'Psychotropics'])
+              ->orWhere('name', 'like', '%morphine%')
+              ->orWhere('name', 'like', '%codeine%')
+              ->orWhere('name', 'like', '%tramadol%');
+        })
+        ->get()
+        ->map(function ($product) {
+            $product->total_quantity = $product->stockBatches->sum('quantity');
+            return $product;
+        });
 
         return response()->json($controlledDrugs);
     }

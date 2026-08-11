@@ -59,6 +59,10 @@ class ProductController extends Controller
             'category' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
+            'wholesale_price' => 'nullable|numeric|min:0',
+            'minimum_order_quantity' => 'nullable|integer|min:1',
+            'is_controlled' => 'sometimes|boolean',
         ]);
 
         $product = Product::create($validated);
@@ -89,6 +93,10 @@ class ProductController extends Controller
             'category' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'price' => 'sometimes|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
+            'wholesale_price' => 'nullable|numeric|min:0',
+            'minimum_order_quantity' => 'nullable|integer|min:1',
+            'is_controlled' => 'sometimes|boolean',
         ]);
 
         $product->update($validated);

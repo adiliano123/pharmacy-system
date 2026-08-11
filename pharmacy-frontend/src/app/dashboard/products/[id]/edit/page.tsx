@@ -14,6 +14,9 @@ export default function EditProductPage() {
     category: '',
     description: '',
     price: '',
+    cost_price: '',
+    wholesale_price: '',
+    is_controlled: false,
   });
 
   useEffect(() => {
@@ -32,6 +35,9 @@ export default function EditProductPage() {
         category: product.category,
         description: product.description || '',
         price: product.price.toString(),
+        cost_price: product.cost_price ? product.cost_price.toString() : '',
+        wholesale_price: product.wholesale_price ? product.wholesale_price.toString() : '',
+        is_controlled: product.is_controlled || false,
       });
     } catch (error) {
       console.error('Error fetching product:', error);
@@ -50,6 +56,9 @@ export default function EditProductPage() {
       await axiosInstance.put(`/products/${params.id}`, {
         ...formData,
         price: parseFloat(formData.price),
+        cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
+        wholesale_price: formData.wholesale_price ? parseFloat(formData.wholesale_price) : null,
+        is_controlled: formData.is_controlled,
       });
       
       alert('Product updated successfully!');
@@ -68,9 +77,10 @@ export default function EditProductPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const target = e.target as HTMLInputElement;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [target.name]: target.type === 'checkbox' ? target.checked : target.value,
     });
   };
 
@@ -160,6 +170,59 @@ export default function EditProductPage() {
                 placeholder="0.00"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+            </div>
+
+            {/* Cost Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cost / Purchase Price (TZS)
+              </label>
+              <input
+                type="number"
+                name="cost_price"
+                value={formData.cost_price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-sm text-gray-500 mt-1">Used for accurate profit/loss calculations</p>
+            </div>
+
+            {/* Wholesale Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Wholesale Price (TZS)
+              </label>
+              <input
+                type="number"
+                name="wholesale_price"
+                value={formData.wholesale_price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Controlled Substance */}
+            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <input
+                type="checkbox"
+                name="is_controlled"
+                id="is_controlled"
+                checked={formData.is_controlled}
+                onChange={handleChange}
+                className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+              />
+              <label htmlFor="is_controlled" className="text-sm font-medium text-red-800 cursor-pointer">
+                Controlled Substance
+                <span className="block text-xs text-red-600 font-normal mt-0.5">
+                  Check if this is a narcotic, psychotropic, or otherwise regulated drug
+                </span>
+              </label>
             </div>
 
             {/* Buttons */}

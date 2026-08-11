@@ -59,6 +59,39 @@ class CustomerController extends Controller
         return response()->json(['message' => 'Customer deleted successfully']);
     }
 
+    // ── Purchase History ───────────────────────────────────────────
+
+    public function purchaseHistory($id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        $sales = Sale::with(['items.product'])
+            ->where('customer_id', $id)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($sale) {
+                return [
+                    'id'             => $sale->id,
+                    'invoice_number' => 'INV-' . str_pad($sale->id, 5, '0', STR_PAD_LEFT),
+                    'total_amount'   => (float) $sale->total_amount,
+                    'payment_method' => $sale->payment_method,
+                    'items_count'    => $sale->items->sum('quantity'),
+                    'created_at'     => $sale->created_at,
+                    'items'          => $sale->items->map(function ($item) {
+                        return [
+                            'id'           => $item->id,
+                            'product_name' => $item->product?->name ?? 'Unknown',
+                            'quantity'     => $item->quantity,
+                            'price'        => (float) $item->price,
+                            'subtotal'     => (float) $item->subtotal,
+                        ];
+                    }),
+                ];
+            });
+
+        return response()->json($sales);
+    }
+
     // ── Credit Management ──────────────────────────────────────────
 
     public function creditIndex()

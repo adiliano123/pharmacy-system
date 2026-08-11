@@ -19,16 +19,16 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
         $thisMonth = Carbon::now()->startOfMonth();
-        
+
         // Today's Sales
         $todaySales = Sale::whereDate('created_at', $today)->sum('total_amount') ?? 0;
-        
+
         // Monthly Sales
         $monthlySales = Sale::where('created_at', '>=', $thisMonth)->sum('total_amount') ?? 0;
-        
+
         // Total Products
         $totalProducts = Product::count();
-        
+
         // Low stock - products with total batch quantity below threshold
         $lowStockItems = DB::table('products')
             ->leftJoin('stock_batches', 'products.id', '=', 'stock_batches.product_id')
@@ -36,24 +36,52 @@ class DashboardController extends Controller
             ->groupBy('products.id')
             ->havingRaw('COALESCE(SUM(stock_batches.quantity), 0) < 20')
             ->count();
-        
+
+        // Out of stock - products with zero total quantity
+        $outOfStock = DB::table('products')
+            ->leftJoin('stock_batches', 'products.id', '=', 'stock_batches.product_id')
+            ->select('products.id')
+            ->groupBy('products.id')
+            ->havingRaw('COALESCE(SUM(stock_batches.quantity), 0) = 0')
+            ->count();
+
         // Total Customers
         $totalCustomers = Customer::count();
-        
+
         // Expiring products - batches expiring in next 30 days
         $expiringProducts = DB::table('stock_batches')
             ->where('expiry_date', '<=', Carbon::now()->addDays(30))
             ->where('expiry_date', '>', Carbon::now())
             ->distinct('product_id')
             ->count('product_id');
-        
+
+        // Weekly sales - last 7 days grouped by day name
+        $weeklyRaw = Sale::where('created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as amount'))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $weeklySales = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i)->toDateString();
+            $dayName = Carbon::now()->subDays($i)->format('D'); // Mon, Tue, etc.
+            $weeklySales[] = [
+                'day'    => $dayName,
+                'amount' => isset($weeklyRaw[$date]) ? (float) $weeklyRaw[$date]->amount : 0,
+            ];
+        }
+
         return response()->json([
-            'todaySales' => $todaySales,
-            'monthlySales' => $monthlySales,
-            'totalProducts' => $totalProducts,
-            'lowStockItems' => $lowStockItems,
-            'totalCustomers' => $totalCustomers,
-            'expiringProducts' => $expiringProducts,
+            'todaySales'      => $todaySales,
+            'monthlySales'    => $monthlySales,
+            'totalProducts'   => $totalProducts,
+            'lowStockItems'   => $lowStockItems,
+            'outOfStock'      => $outOfStock,
+            'totalCustomers'  => $totalCustomers,
+            'expiringProducts'=> $expiringProducts,
+            'weeklySales'     => $weeklySales,
         ]);
     }
 

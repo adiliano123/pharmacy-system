@@ -108,13 +108,23 @@ class ReportController extends Controller
         // Get sales data
         $sales = Sale::whereBetween('created_at', [$startDate, $endDate])->get();
         
+        // Revenue
         $totalRevenue = $sales->sum('total_amount') ?? 0;
         $totalTransactions = $sales->count();
         $averageTransaction = $totalTransactions > 0 ? $totalRevenue / $totalTransactions : 0;
 
-        // Estimate cost as 60% of revenue (since products table doesn't have cost column)
-        $costOfGoodsSold = $totalRevenue * 0.6;
-        $operatingExpenses = $totalRevenue * 0.05; // 5% for operating expenses
+        // Calculate real cost of goods sold using cost_price where set, else 60% fallback
+        $cogsData = DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->select(
+                DB::raw('SUM(sale_items.quantity * COALESCE(products.cost_price, products.price * 0.6)) as cogs')
+            )
+            ->whereBetween('sales.created_at', [$startDate, $endDate])
+            ->first();
+
+        $costOfGoodsSold = $cogsData ? (float) $cogsData->cogs : $totalRevenue * 0.6;
+        $operatingExpenses = $totalRevenue * 0.05;
         $totalCosts = $costOfGoodsSold + $operatingExpenses;
 
         $grossProfit = $totalRevenue - $costOfGoodsSold;
@@ -139,21 +149,21 @@ class ReportController extends Controller
                 return $item;
             });
 
-        // Category breakdown
+        // Category breakdown using real cost_price
         $categoryBreakdown = DB::table('sale_items')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->select(
                 'products.category',
-                DB::raw('SUM(sale_items.subtotal) as revenue')
+                DB::raw('SUM(sale_items.subtotal) as revenue'),
+                DB::raw('SUM(sale_items.quantity * COALESCE(products.cost_price, products.price * 0.6)) as cost')
             )
             ->whereBetween('sales.created_at', [$startDate, $endDate])
             ->groupBy('products.category')
             ->get()
             ->map(function ($item) {
-                $item->cost = $item->revenue * 0.6;
-                $item->profit = $item->revenue * 0.4;
-                $item->margin = 40; // 40% margin
+                $item->profit = $item->revenue - $item->cost;
+                $item->margin = $item->revenue > 0 ? round(($item->profit / $item->revenue) * 100, 1) : 0;
                 return $item;
             });
 

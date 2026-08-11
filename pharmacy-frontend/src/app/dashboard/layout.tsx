@@ -39,34 +39,28 @@ export default function DashboardLayout({
 
   useEffect(() => {
     const checkAuth = async () => {
-      // First check localStorage
       const currentUser = auth.getCurrentUser();
-      
+
       if (!currentUser) {
         router.push('/login');
-        setLoading(false);
         return;
       }
-      
-      // Set initial timestamp
+
+      // Render immediately with cached user — no loading delay
+      setUser(currentUser);
       setImageTimestamp(Date.now());
-      
-      // Fetch fresh user data from backend
+      setLoading(false);
+
+      // Refresh user data silently in the background
       try {
         const freshUser = await auth.fetchCurrentUser();
         if (freshUser) {
           setUser(freshUser);
-          // Update timestamp when user data changes
           setImageTimestamp(Date.now());
-        } else {
-          setUser(currentUser);
         }
-      } catch (error) {
-        console.error('Failed to fetch user:', error);
-        setUser(currentUser);
+      } catch {
+        // Silently ignore — cached user is already showing
       }
-      
-      setLoading(false);
     };
     checkAuth();
   }, [router]);
@@ -114,14 +108,14 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+      <aside className="w-64 bg-teal-900 flex flex-col overflow-hidden">
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-gray-200">
+        <div className="h-16 flex items-center px-6 border-b border-teal-700">
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => window.location.href = '/dashboard'}>
             <span className="text-2xl">💊</span>
-            <span className="text-lg font-bold text-gray-800">Pharmacy ERP</span>
+            <span className="text-lg font-bold text-white">Pharmacy ERP</span>
           </div>
         </div>
 
@@ -130,87 +124,87 @@ export default function DashboardLayout({
           <div className="px-3 space-y-1">
             <Link
               href="/dashboard"
-              className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+              className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
             >
               <span className="mr-3">📊</span>
               Dashboard
             </Link>
-            
+
             {/* Products - All roles can view */}
             <Link
               href="/dashboard/products"
-              className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+              className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
             >
               <span className="mr-3">📦</span>
               Products
             </Link>
-            
+
             {/* Inventory - Admin, Pharmacist, Storekeeper */}
             {(user?.role === 'admin' || user?.role === 'pharmacist' || user?.role === 'storekeeper') && (
               <Link
                 href="/dashboard/inventory"
-                className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+                className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
               >
                 <span className="mr-3">📋</span>
                 Inventory
               </Link>
             )}
-            
+
             {/* POS - Cashier and Admin only */}
             {(user?.role === 'cashier' || user?.role === 'admin') && (
               <Link
                 href="/dashboard/pos"
-                className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+                className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
               >
-                <span className="mr-3">�s</span>
+                <span className="mr-3">🖥️</span>
                 POS
               </Link>
             )}
-            
+
             {/* Sales - Not for Storekeeper */}
             {user?.role !== 'storekeeper' && (
               <Link
                 href="/dashboard/sales"
-                className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+                className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
               >
                 <span className="mr-3">💰</span>
                 Sales
               </Link>
             )}
-            
+
             {/* Customers - Not for Storekeeper */}
             {user?.role !== 'storekeeper' && (
               <Link
                 href="/dashboard/customers"
-                className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+                className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
               >
                 <span className="mr-3">👥</span>
                 Customers
               </Link>
             )}
-            
+
             {/* Wholesale - Admin and Pharmacist */}
             {(user?.role === 'admin' || user?.role === 'pharmacist') && (
               <Link
                 href="/dashboard/wholesale"
-                className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+                className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
               >
                 <span className="mr-3">🏢</span>
                 Wholesale
               </Link>
             )}
-            
+
             {/* Reports - Admin, Pharmacist, Storekeeper */}
             {(user?.role === 'admin' || user?.role === 'pharmacist' || user?.role === 'storekeeper') && (
               <>
                 <div className="pt-2">
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">
+                  <div className="px-3 py-2 text-xs font-semibold text-teal-400 uppercase tracking-wider">
                     Reports
                   </div>
                   {user?.role !== 'storekeeper' && (
                     <Link
                       href="/dashboard/reports/sales"
-                      className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                      className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md transition-colors"
                     >
                       <span className="mr-3">💰</span>
                       Sales Report
@@ -219,7 +213,7 @@ export default function DashboardLayout({
                   {user?.role !== 'storekeeper' && (
                     <Link
                       href="/dashboard/reports/profit-loss"
-                      className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                      className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md transition-colors"
                     >
                       <span className="mr-3">📊</span>
                       Profit & Loss
@@ -227,14 +221,14 @@ export default function DashboardLayout({
                   )}
                   <Link
                     href="/dashboard/reports/stock-movement"
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                    className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md transition-colors"
                   >
                     <span className="mr-3">📦</span>
                     Stock Movement
                   </Link>
                   <Link
                     href="/dashboard/reports/expiry"
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                    className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md transition-colors"
                   >
                     <span className="mr-3">⚠️</span>
                     Expiry Report
@@ -242,38 +236,45 @@ export default function DashboardLayout({
                 </div>
               </>
             )}
-            
+
             {/* Admin Only Sections */}
             {user?.role === 'admin' && (
               <>
                 <Link
                   href="/dashboard/users"
-                  className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+                  className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
                 >
                   <span className="mr-3">👤</span>
                   Users
                 </Link>
                 <div className="pt-2">
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">
+                  <div className="px-3 py-2 text-xs font-semibold text-teal-400 uppercase tracking-wider">
                     Compliance
                   </div>
                   <Link
+                    href="/dashboard/compliance"
+                    className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md transition-colors"
+                  >
+                    <span className="mr-3">🛡️</span>
+                    Overview
+                  </Link>
+                  <Link
                     href="/dashboard/compliance/audit-trail"
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                    className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md transition-colors"
                   >
                     <span className="mr-3">📋</span>
                     Audit Trail
                   </Link>
                   <Link
                     href="/dashboard/compliance/controlled-drugs"
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                    className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md transition-colors"
                   >
                     <span className="mr-3">💊</span>
                     Controlled Drugs
                   </Link>
                   <Link
                     href="/dashboard/compliance/inspection"
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                    className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md transition-colors"
                   >
                     <span className="mr-3">🔍</span>
                     Inspection Report
@@ -281,7 +282,7 @@ export default function DashboardLayout({
                 </div>
                 <Link
                   href="/dashboard/activity-logs"
-                  className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md font-medium transition-colors"
+                  className="flex items-center px-3 py-2 text-sm text-teal-100 hover:text-white hover:bg-teal-700 rounded-md font-medium transition-colors"
                 >
                   <span className="mr-3">📝</span>
                   Activity Logs
@@ -292,16 +293,16 @@ export default function DashboardLayout({
         </nav>
 
         {/* User Info & Logout */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-teal-700 p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="text-sm font-semibold text-gray-900">{user?.name}</div>
-              <div className="text-xs text-gray-500 capitalize">{user?.role}</div>
+              <div className="text-sm font-semibold text-white">{user?.name}</div>
+              <div className="text-xs text-teal-300 capitalize">{user?.role}</div>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full px-4 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded-md font-medium transition-colors"
+            className="w-full px-4 py-2 text-sm text-white bg-red-500 hover:bg-red-600 rounded-md font-medium transition-colors"
           >
             Logout
           </button>
@@ -311,14 +312,14 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-          <h1 className="text-xl font-semibold text-gray-800">Pharmacy Management System</h1>
-          
+        <header className="h-16 bg-teal-700 flex items-center justify-between px-6 shadow-md">
+          <h1 className="text-xl font-semibold text-white">Pharmacy Management System</h1>
+
           <div className="flex items-center gap-4">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-teal-600 transition-colors text-white"
               title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
@@ -326,82 +327,82 @@ export default function DashboardLayout({
 
             {/* User Profile */}
             <div className="relative">
-            <button
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              {getProfileImageUrl() ? (
-                <div className="w-9 h-9 rounded-full overflow-hidden relative">
-                  <Image
-                    src={getProfileImageUrl()!}
-                    alt={user?.name || 'User'}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-teal-600 transition-colors"
+              >
+                {getProfileImageUrl() ? (
+                  <div className="w-9 h-9 rounded-full overflow-hidden relative">
+                    <Image
+                      src={getProfileImageUrl()!}
+                      alt={user?.name || 'User'}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                ) : (
+                  <div className="w-9 h-9 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold border-2 border-teal-300">
+                    {user?.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="text-left">
+                  <div className="text-sm font-semibold text-white">{user?.name}</div>
+                  <div className="text-xs text-teal-200 capitalize">{user?.role}</div>
                 </div>
-              ) : (
-                <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  {user?.name.charAt(0).toUpperCase()}
+                <svg className="w-4 h-4 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="px-4 py-3 border-b border-gray-200">
+                    <div className="text-sm font-semibold text-gray-900">{user?.name}</div>
+                    <div className="text-xs text-gray-500">{user?.email}</div>
+                  </div>
+                  <Link
+                    href="/dashboard/profile"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setShowProfileMenu(false)}
+                  >
+                    <span className="mr-3">👤</span>
+                    My Profile
+                  </Link>
+                  <Link
+                    href="/dashboard/settings"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setShowProfileMenu(false)}
+                  >
+                    <span className="mr-3">⚙️</span>
+                    Settings
+                  </Link>
+                  <div className="border-t border-gray-200 my-2"></div>
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      handleLogout();
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <span className="mr-3">🚪</span>
+                    Logout
+                  </button>
                 </div>
               )}
-              <div className="text-left">
-                <div className="text-sm font-semibold text-gray-900">{user?.name}</div>
-                <div className="text-xs text-gray-500 capitalize">{user?.role}</div>
-              </div>
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {/* Dropdown Menu */}
-            {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                <div className="px-4 py-3 border-b border-gray-200">
-                  <div className="text-sm font-semibold text-gray-900">{user?.name}</div>
-                  <div className="text-xs text-gray-500">{user?.email}</div>
-                </div>
-                <Link
-                  href="/dashboard/profile"
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                  onClick={() => setShowProfileMenu(false)}
-                >
-                  <span className="mr-3">👤</span>
-                  My Profile
-                </Link>
-                <Link
-                  href="/dashboard/settings"
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                  onClick={() => setShowProfileMenu(false)}
-                >
-                  <span className="mr-3">⚙️</span>
-                  Settings
-                </Link>
-                <div className="border-t border-gray-200 my-2"></div>
-                <button
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    handleLogout();
-                  }}
-                  className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                >
-                  <span className="mr-3">🚪</span>
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
+            </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+        <main className="flex-1 overflow-y-auto p-6 bg-gray-50 min-h-0">
           {children}
         </main>
 
         {/* Footer */}
-        <footer className="bg-white border-t border-gray-200 py-4 px-6">
-          <div className="text-center text-sm text-gray-600">
+        <footer className="shrink-0 bg-teal-700 py-4 px-6">
+          <div className="text-center text-sm text-teal-100">
             © 2026 Pharmacy ERP System. All rights reserved.
           </div>
         </footer>

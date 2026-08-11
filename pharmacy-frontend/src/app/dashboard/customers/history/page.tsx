@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { axiosInstance } from '@/lib/api';
 import { History, Search, ShoppingCart, Calendar, DollarSign } from 'lucide-react';
 
@@ -32,6 +33,7 @@ interface PurchaseItem {
 }
 
 export default function CustomerHistoryPage() {
+  const searchParams = useSearchParams();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [purchases, setPurchases] = useState<PurchaseHistory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,14 @@ export default function CustomerHistoryPage() {
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  // Pre-select customer from query param after customers load
+  useEffect(() => {
+    const customerId = searchParams.get('customer');
+    if (customerId && customers.length > 0) {
+      setSelectedCustomer(parseInt(customerId));
+    }
+  }, [customers, searchParams]);
 
   useEffect(() => {
     if (selectedCustomer) {
@@ -213,7 +223,7 @@ export default function CustomerHistoryPage() {
                       <DollarSign className="text-green-600" size={20} />
                       <span className="text-sm text-gray-600">Total Spent</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-800">${totalSpent.toFixed(2)}</p>
+                    <p className="text-2xl font-bold text-gray-800">TZS {totalSpent.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -236,7 +246,7 @@ export default function CustomerHistoryPage() {
                             <p className="text-sm text-gray-600">{formatDate(purchase.created_at)}</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-lg font-bold text-gray-800">${purchase.total_amount.toFixed(2)}</p>
+                            <p className="text-lg font-bold text-gray-800">TZS {purchase.total_amount.toLocaleString()}</p>
                             <p className="text-sm text-gray-600 capitalize">{purchase.payment_method}</p>
                           </div>
                         </div>
@@ -249,7 +259,7 @@ export default function CustomerHistoryPage() {
                                 <span className="text-gray-700">
                                   {item.product_name} × {item.quantity}
                                 </span>
-                                <span className="text-gray-600">${item.subtotal.toFixed(2)}</span>
+                                <span className="text-gray-600">TZS {item.subtotal.toLocaleString()}</span>
                               </div>
                             ))}
                           </div>

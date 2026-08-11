@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { axiosInstance } from '@/lib/api';
 import { Lock, Bell, Shield, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 
@@ -19,15 +19,14 @@ export default function SettingsPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [sessions, setSessions] = useState<Session[]>([
-    {
-      id: '1',
-      device: 'Windows PC - Chrome',
-      location: 'Manila, Philippines',
-      last_active: 'Active now',
-      current: true,
-    },
-  ]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+
+  useEffect(() => {
+    // Fetch real active sessions from API
+    axiosInstance.get('/users/sessions')
+      .then(res => setSessions(res.data ?? []))
+      .catch(() => setSessions([]));
+  }, []);
 
   // Password form
   const [passwordForm, setPasswordForm] = useState({
@@ -289,7 +288,7 @@ export default function SettingsPage() {
                       onChange={(e) => setNotifications({ ...notifications, email_notifications: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
@@ -305,7 +304,7 @@ export default function SettingsPage() {
                       onChange={(e) => setNotifications({ ...notifications, low_stock_alerts: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
@@ -321,7 +320,7 @@ export default function SettingsPage() {
                       onChange={(e) => setNotifications({ ...notifications, expiry_alerts: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
@@ -337,7 +336,7 @@ export default function SettingsPage() {
                       onChange={(e) => setNotifications({ ...notifications, sales_reports: e.target.checked })}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
 
@@ -380,7 +379,7 @@ export default function SettingsPage() {
                   </p>
                   
                   <div className="space-y-3 mb-4">
-                    {sessions.map((session) => (
+                    {sessions.length > 0 ? sessions.map((session) => (
                       <div key={session.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
@@ -403,7 +402,9 @@ export default function SettingsPage() {
                           </button>
                         )}
                       </div>
-                    ))}
+                    )) : (
+                      <p className="text-sm text-gray-400 text-center py-4">No active sessions found</p>
+                    )}
                   </div>
                 </div>
 

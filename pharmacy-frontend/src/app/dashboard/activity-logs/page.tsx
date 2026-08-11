@@ -154,7 +154,7 @@ export default function ActivityLogsPage() {
               name="action"
               value={filters.action}
               onChange={handleFilterChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
             >
               <option value="">All Actions</option>
               <option value="login">Login</option>
@@ -173,7 +173,7 @@ export default function ActivityLogsPage() {
               name="model"
               value={filters.model}
               onChange={handleFilterChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
             >
               <option value="">All Models</option>
               <option value="Product">Product</option>
@@ -244,9 +244,9 @@ export default function ActivityLogsPage() {
                     <div className="max-w-md">
                       <p className="text-gray-900">{log.description}</p>
                       {log.model && (
-                        <p className="text-xs text-gray-500 mt-1">
+                        <span className="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-gray-700 text-xs font-medium rounded">
                           {log.model} #{log.model_id}
-                        </p>
+                        </span>
                       )}
                     </div>
                   </td>

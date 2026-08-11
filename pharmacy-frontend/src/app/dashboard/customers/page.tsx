@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { axiosInstance } from '@/lib/api';
 
 interface Customer {
@@ -13,6 +14,7 @@ interface Customer {
 }
 
 export default function CustomersPage() {
+  const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -105,12 +107,20 @@ export default function CustomersPage() {
                   <td className="py-3 px-4 text-gray-600">{customer.phone || 'N/A'}</td>
                   <td className="py-3 px-4 text-gray-600">{customer.address || 'N/A'}</td>
                   <td className="py-3 px-4 text-center">
-                    <button
-                      onClick={() => handleDelete(customer.id)}
-                      className="px-3 py-1 text-red-600 hover:bg-red-50 rounded font-medium text-sm"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => router.push(`/dashboard/customers/history?customer=${customer.id}`)}
+                        className="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded font-medium text-sm"
+                      >
+                        History
+                      </button>
+                      <button
+                        onClick={() => handleDelete(customer.id)}
+                        className="px-3 py-1 text-red-600 hover:bg-red-50 rounded font-medium text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

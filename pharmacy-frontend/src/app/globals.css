@@ -25,6 +25,52 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Global placeholder styling — visible in both light and dark mode */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #6b7280;  /* gray-500 — clear and readable on white/light backgrounds */
+  opacity: 1;
+}
+
+/* Ensure select dropdowns always show dark text */
+select {
+  color: #111827; /* gray-900 */
+}
+
+select option {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+/* Date input — make the mm/dd/yyyy and calendar text clearly visible */
+input[type="date"],
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #374151; /* gray-700 — dark and clearly readable */
+}
+
+/* When the date field is empty, show the placeholder parts in gray */
+input[type="date"]:not([value])::-webkit-datetime-edit-month-field,
+input[type="date"]:not([value])::-webkit-datetime-edit-day-field,
+input[type="date"]:not([value])::-webkit-datetime-edit-year-field,
+input[type="date"][value=""]::-webkit-datetime-edit-month-field,
+input[type="date"][value=""]::-webkit-datetime-edit-day-field,
+input[type="date"][value=""]::-webkit-datetime-edit-year-field {
+  color: #6b7280; /* gray-500 — visible placeholder state */
+}
+
+/* Calendar icon button */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.7;
+  cursor: pointer;
+  filter: invert(40%);
+}
+
 /* Custom Animations */
 @keyframes fade-in {
   from {
@@ -114,7 +160,7 @@ html {
 .dark-mode input::placeholder,
 .dark-mode textarea::placeholder,
 .dark-mode select::placeholder {
-  color: #9ca3af !important;
+  color: #d1d5db !important;  /* gray-300 — readable on dark backgrounds */
   opacity: 1 !important;
 }
 
@@ -695,6 +741,7 @@ html {
 }
 
 /* Date inputs – browser-native placeholder text */
+.dark-mode input[type="date"],
 .dark-mode input[type="date"]::-webkit-datetime-edit,
 .dark-mode input[type="date"]::-webkit-datetime-edit-fields-wrapper,
 .dark-mode input[type="date"]::-webkit-datetime-edit-text,
@@ -704,6 +751,12 @@ html {
   color: #f3f4f6 !important;
 }
 
+.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(80%) !important;
+  opacity: 0.9 !important;
+  cursor: pointer;
+}
+
 /* Search inputs */
 .dark-mode input[type="search"]::placeholder,
 .dark-mode input[type="text"]::placeholder,
@@ -711,6 +764,6 @@ html {
 .dark-mode input[type="password"]::placeholder,
 .dark-mode input[type="number"]::placeholder,
 .dark-mode input[type="tel"]::placeholder {
-  color: #9ca3af !important;
+  color: #d1d5db !important;
   opacity: 1 !important;
 }

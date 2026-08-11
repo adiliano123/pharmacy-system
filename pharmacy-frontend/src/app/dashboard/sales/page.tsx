@@ -198,7 +198,16 @@ export default function SalesPage() {
                     {new Date(sale.created_at).toLocaleString()}
                   </td>
                   <td className="py-3 px-4">
-                    {sale.customer?.name || 'Walk-in Customer'}
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs shrink-0">
+                        {(sale.customer?.name || 'W')[0].toUpperCase()}
+                      </div>
+                      <span className="font-medium text-gray-900">
+                        {sale.customer?.name || (
+                          <span className="text-gray-500 italic">Walk-in Customer</span>
+                        )}
+                      </span>
+                    </div>
                   </td>
                   <td className="py-3 px-4">
                     <div>

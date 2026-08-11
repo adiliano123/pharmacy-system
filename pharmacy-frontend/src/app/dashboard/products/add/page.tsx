@@ -12,8 +12,10 @@ export default function AddProductPage() {
     category: '',
     description: '',
     price: '',
+    cost_price: '',
     wholesale_price: '',
     minimum_order_quantity: '1',
+    is_controlled: false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,8 +26,10 @@ export default function AddProductPage() {
       await axiosInstance.post('/products', {
         ...formData,
         price: parseFloat(formData.price),
+        cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
         wholesale_price: formData.wholesale_price ? parseFloat(formData.wholesale_price) : null,
         minimum_order_quantity: parseInt(formData.minimum_order_quantity),
+        is_controlled: formData.is_controlled,
       });
       
       alert('Product added successfully!');
@@ -44,9 +48,10 @@ export default function AddProductPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const target = e.target as HTMLInputElement;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [target.name]: target.type === 'checkbox' ? target.checked : target.value,
     });
   };
 
@@ -134,6 +139,24 @@ export default function AddProductPage() {
               />
             </div>
 
+            {/* Cost Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cost / Purchase Price (TZS)
+              </label>
+              <input
+                type="number"
+                name="cost_price"
+                value={formData.cost_price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-400 text-gray-900 transition-colors"
+              />
+              <p className="text-sm text-gray-500 mt-1">Used for accurate profit/loss calculations</p>
+            </div>
+
             {/* Wholesale Price */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -167,6 +190,24 @@ export default function AddProductPage() {
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-400 text-gray-900 transition-colors"
               />
               <p className="text-sm text-gray-500 mt-1">Minimum quantity for wholesale orders</p>
+            </div>
+
+            {/* Controlled Substance */}
+            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <input
+                type="checkbox"
+                name="is_controlled"
+                id="is_controlled"
+                checked={formData.is_controlled}
+                onChange={handleChange}
+                className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+              />
+              <label htmlFor="is_controlled" className="text-sm font-medium text-red-800 cursor-pointer">
+                Controlled Substance
+                <span className="block text-xs text-red-600 font-normal mt-0.5">
+                  Check if this is a narcotic, psychotropic, or otherwise regulated drug
+                </span>
+              </label>
             </div>
 
             {/* Info Box */}

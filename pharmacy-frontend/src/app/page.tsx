@@ -77,7 +77,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white font-sans flex flex-col">
 
       {/* Announcement Bar */}
       <div className="bg-linear-to-r from-green-600 to-teal-600 text-white py-2 text-center text-sm">
@@ -404,8 +404,8 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-6">
+      <footer className="bg-gray-900 text-gray-400 border-t border-gray-800 mt-auto">
+        <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -448,6 +448,11 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Sticky bottom bar */}
+      <div className="sticky bottom-0 z-40 bg-gray-950 text-gray-400 text-xs text-center py-2 border-t border-gray-800">
+        © 2026 MediPharm · Tanzania&apos;s Trusted Pharmacy System
+      </div>
 
     </div>
   );

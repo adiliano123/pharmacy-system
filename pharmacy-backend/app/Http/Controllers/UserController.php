@@ -323,6 +323,52 @@ class UserController extends Controller
     }
 
     /**
+     * Get active Sanctum sessions (personal access tokens) for the current user
+     */
+    public function sessions(Request $request)
+    {
+        $user = $request->user();
+        $currentToken = $request->user()->currentAccessToken();
+
+        $sessions = $user->tokens()->orderByDesc('last_used_at')->get()->map(function ($token) use ($currentToken) {
+            return [
+                'id'          => (string) $token->id,
+                'device'      => $token->name,
+                'location'    => 'Unknown',
+                'last_active' => $token->last_used_at
+                    ? $token->last_used_at->diffForHumans()
+                    : $token->created_at->diffForHumans(),
+                'current'     => $currentToken && $token->id === $currentToken->id,
+            ];
+        });
+
+        return response()->json($sessions);
+    }
+
+    /**
+     * Revoke a specific Sanctum token (logout a session)
+     */
+    public function logoutSession(Request $request, $tokenId)
+    {
+        $user = $request->user();
+        $token = $user->tokens()->where('id', $tokenId)->first();
+
+        if (!$token) {
+            return response()->json(['message' => 'Session not found'], 404);
+        }
+
+        // Prevent revoking the currently active token via this endpoint
+        $currentToken = $user->currentAccessToken();
+        if ($currentToken && $token->id === $currentToken->id) {
+            return response()->json(['message' => 'Cannot revoke your current session here. Use logout instead.'], 422);
+        }
+
+        $token->delete();
+
+        return response()->json(['message' => 'Session logged out successfully']);
+    }
+
+    /**
      * Delete user account
      */
     public function deleteAccount(Request $request)

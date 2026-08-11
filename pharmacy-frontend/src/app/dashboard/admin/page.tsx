@@ -18,6 +18,15 @@ interface SalesData {
   amount: number;
 }
 
+interface StockStatusData {
+  label: string;
+  value: number;
+  color: string;
+  dashArray: string;
+  dashOffset: string;
+  stroke: string;
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     todaySales: 0,
@@ -27,15 +36,8 @@ export default function AdminDashboard() {
     totalCustomers: 0,
     expiringProducts: 0,
   });
-  const [salesData] = useState<SalesData[]>([
-    { day: 'Mon', amount: 45000 },
-    { day: 'Tue', amount: 52000 },
-    { day: 'Wed', amount: 38000 },
-    { day: 'Thu', amount: 65000 },
-    { day: 'Fri', amount: 78000 },
-    { day: 'Sat', amount: 92000 },
-    { day: 'Sun', amount: 58000 },
-  ]);
+  const [salesData, setSalesData] = useState<SalesData[]>([]);
+  const [stockStatus, setStockStatus] = useState<StockStatusData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,7 +47,34 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       const response = await axiosInstance.get('/dashboard/admin');
-      setStats(response.data);
+      const data = response.data;
+      setStats(data);
+
+      // Build weekly sales from API data if available, else empty
+      if (data.weeklySales && Array.isArray(data.weeklySales)) {
+        setSalesData(data.weeklySales);
+      } else {
+        setSalesData([]);
+      }
+
+      // Calculate stock status percentages from real counts
+      const total = (data.totalProducts || 0);
+      if (total > 0) {
+        const outCount = data.outOfStock || 0;
+        const lowCount = (data.lowStockItems || 0) - outCount;
+        const inCount = total - (data.lowStockItems || 0);
+        const inPct = Math.round((inCount / total) * 100);
+        const lowPct = Math.round((lowCount / total) * 100);
+        const outPct = 100 - inPct - lowPct;
+        const circumference = 251;
+        setStockStatus([
+          { label: 'In Stock', value: inPct, color: 'bg-green-500', stroke: '#10b981', dashArray: `${(inPct / 100) * circumference} ${circumference}`, dashOffset: '0' },
+          { label: 'Low Stock', value: lowPct, color: 'bg-yellow-500', stroke: '#eab308', dashArray: `${(lowPct / 100) * circumference} ${circumference}`, dashOffset: `-${(inPct / 100) * circumference}` },
+          { label: 'Out of Stock', value: outPct, color: 'bg-red-500', stroke: '#ef4444', dashArray: `${(outPct / 100) * circumference} ${circumference}`, dashOffset: `-${((inPct + lowPct) / 100) * circumference}` },
+        ]);
+      } else {
+        setStockStatus([]);
+      }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
     } finally {
@@ -53,23 +82,11 @@ export default function AdminDashboard() {
     }
   };
 
-  const maxSales = Math.max(...salesData.map(d => d.amount));
-
-  const stockStatus = [
-    { label: 'In Stock', value: 65, color: 'bg-green-500' },
-    { label: 'Low Stock', value: 25, color: 'bg-yellow-500' },
-    { label: 'Out of Stock', value: 10, color: 'bg-red-500' },
-  ];
-
-  const profitData = [
-    { label: 'Revenue', value: 60, color: 'bg-blue-500' },
-    { label: 'Cost', value: 30, color: 'bg-orange-500' },
-    { label: 'Profit', value: 30, color: 'bg-green-500' },
-  ];
+  const maxSales = salesData.length > 0 ? Math.max(...salesData.map(d => d.amount)) : 1;
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <div className="text-center">
           <div className="text-4xl mb-4">⏳</div>
           <p>Loading dashboard...</p>
@@ -95,7 +112,7 @@ export default function AdminDashboard() {
               <p className="text-3xl font-bold text-gray-900">
                 TZS {(stats.todaySales || 0).toLocaleString()}
               </p>
-              <p className="text-sm text-green-600 mt-2">↑ 12% from yesterday</p>
+              <p className="text-sm text-green-600 mt-2">Current day total</p>
             </div>
             <div className="bg-green-100 p-3 rounded-full">
               <DollarSign className="text-green-600" size={32} />
@@ -176,86 +193,84 @@ export default function AdminDashboard() {
         {/* Sales Bar Chart */}
         <div className="bg-white rounded-2xl shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-6">Weekly Sales</h2>
-          <div className="space-y-4">
-            {salesData.map((data) => (
-              <div key={data.day} className="flex items-center gap-4">
-                <span className="text-sm font-medium text-gray-600 w-12">{data.day}</span>
-                <div className="flex-1 bg-gray-200 rounded-full h-8 relative overflow-hidden">
-                  <div
-                    className="bg-linear-to-r from-blue-500 to-blue-600 h-full rounded-full flex items-center justify-end pr-3 transition-all duration-500"
-                    style={{ width: `${(data.amount / maxSales) * 100}%` }}
-                  >
-                    <span className="text-white text-xs font-semibold">
-                      {data.amount >= maxSales * 0.3 && `TZS ${(data.amount / 1000).toFixed(0)}k`}
-                    </span>
+          {salesData.length > 0 ? (
+            <div className="space-y-4">
+              {salesData.map((data) => (
+                <div key={data.day} className="flex items-center gap-4">
+                  <span className="text-sm font-medium text-gray-600 w-12">{data.day}</span>
+                  <div className="flex-1 bg-gray-200 rounded-full h-8 relative overflow-hidden">
+                    <div
+                      className="bg-linear-to-r from-blue-500 to-blue-600 h-full rounded-full flex items-center justify-end pr-3 transition-all duration-500"
+                      style={{ width: `${(data.amount / maxSales) * 100}%` }}
+                    >
+                      <span className="text-white text-xs font-semibold">
+                        {data.amount >= maxSales * 0.3 && `TZS ${(data.amount / 1000).toFixed(0)}k`}
+                      </span>
+                    </div>
                   </div>
+                  <span className="text-sm font-semibold text-gray-900 w-20 text-right">
+                    TZS {(data.amount / 1000).toFixed(0)}k
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-gray-900 w-20 text-right">
-                  TZS {(data.amount / 1000).toFixed(0)}k
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-48 text-gray-400">
+              <TrendingUp size={40} className="mb-3 opacity-40" />
+              <p className="text-sm">No sales data for this week yet</p>
+            </div>
+          )}
         </div>
 
         {/* Stock Status */}
         <div className="bg-white rounded-2xl shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-6">Stock Status</h2>
-          <div className="space-y-6">
-            {stockStatus.map((status) => (
-              <div key={status.label}>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-700">{status.label}</span>
-                  <span className="text-sm font-bold text-gray-900">{status.value}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div
-                    className={`${status.color} h-3 rounded-full transition-all duration-500`}
-                    style={{ width: `${status.value}%` }}
-                  ></div>
+          {stockStatus.length > 0 ? (
+            <>
+              <div className="space-y-6">
+                {stockStatus.map((status) => (
+                  <div key={status.label}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">{status.label}</span>
+                      <span className="text-sm font-bold text-gray-900">{status.value}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div
+                        className={`${status.color} h-3 rounded-full transition-all duration-500`}
+                        style={{ width: `${status.value}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 flex justify-center">
+                <div className="relative w-48 h-48">
+                  <svg viewBox="0 0 100 100" className="transform -rotate-90" style={{ overflow: 'visible' }}>
+                    {stockStatus.map((s) => (
+                      <circle key={s.label} cx="50" cy="50" r="40" fill="none" stroke={s.stroke} strokeWidth="20"
+                        strokeDasharray={s.dashArray} strokeDashoffset={s.dashOffset} />
+                    ))}
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <ShoppingCart className="text-gray-400" size={32} />
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-          
-          {/* Pie Chart Representation */}
-          <div className="mt-8 flex justify-center">
-            <div className="relative w-48 h-48">
-              <svg viewBox="0 0 100 100" className="transform -rotate-90 pie-chart" style={{overflow: 'visible'}}>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" strokeWidth="20" strokeDasharray="163 251" />
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#eab308" strokeWidth="20" strokeDasharray="63 251" strokeDashoffset="-163" />
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" strokeWidth="20" strokeDasharray="25 251" strokeDashoffset="-226" />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center pie-chart-center">
-                <ShoppingCart className="text-gray-400 pie-chart-icon" size={32} />
+              <div className="mt-4 flex justify-center gap-6 text-sm">
+                {stockStatus.map((s) => (
+                  <span key={s.label} className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: s.stroke }}></span>
+                    {s.label}
+                  </span>
+                ))}
               </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-48 text-gray-400">
+              <Package size={40} className="mb-3 opacity-40" />
+              <p className="text-sm">No inventory data available</p>
             </div>
-          </div>
-          {/* Legend */}
-          <div className="mt-4 flex justify-center gap-6 text-sm">
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor:'#10b981'}}></span>In Stock</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor:'#eab308'}}></span>Low</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{backgroundColor:'#ef4444'}}></span>Critical</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Profit Distribution */}
-      <div className="bg-white rounded-2xl shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-6">Profit Distribution</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {profitData.map((item) => (
-            <div key={item.label} className="text-center">
-              <div className="mb-4">
-                <div className={`w-32 h-32 mx-auto rounded-full border-8 ${item.color} border-opacity-30 flex items-center justify-center relative`}>
-                  <div className={`absolute inset-0 rounded-full ${item.color} opacity-10`}></div>
-                  <span className="text-3xl font-bold text-gray-900 relative z-10">{item.value}%</span>
-                </div>
-              </div>
-              <h3 className={`text-lg font-semibold ${item.color.replace('bg-', 'text-')}`}>{item.label}</h3>
-              <p className="text-sm text-gray-600 mt-1">TZS {(item.value * 10000).toLocaleString()}</p>
-            </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -263,19 +278,19 @@ export default function AdminDashboard() {
       <div className="bg-white rounded-2xl shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg text-center transition-colors">
+          <button className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg text-center transition-colors" onClick={() => window.location.href='/dashboard/products/add'}>
             <Package className="mx-auto mb-2 text-blue-600" size={24} />
             <span className="text-sm font-medium text-gray-900">Add Product</span>
           </button>
-          <button className="p-4 bg-green-50 hover:bg-green-100 rounded-lg text-center transition-colors">
+          <button className="p-4 bg-green-50 hover:bg-green-100 rounded-lg text-center transition-colors" onClick={() => window.location.href='/dashboard/pos'}>
             <ShoppingCart className="mx-auto mb-2 text-green-600" size={24} />
             <span className="text-sm font-medium text-gray-900">New Sale</span>
           </button>
-          <button className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-center transition-colors">
+          <button className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-center transition-colors" onClick={() => window.location.href='/dashboard/customers/add'}>
             <Users className="mx-auto mb-2 text-purple-600" size={24} />
             <span className="text-sm font-medium text-gray-900">Add Customer</span>
           </button>
-          <button className="p-4 bg-orange-50 hover:bg-orange-100 rounded-lg text-center transition-colors">
+          <button className="p-4 bg-orange-50 hover:bg-orange-100 rounded-lg text-center transition-colors" onClick={() => window.location.href='/dashboard/reports'}>
             <TrendingUp className="mx-auto mb-2 text-orange-600" size={24} />
             <span className="text-sm font-medium text-gray-900">View Reports</span>
           </button>
